@@ -7,9 +7,9 @@ export interface IFigurine {
   category: ObjectId
   manufacturer?: string
   dimensions: {
-    height: number
-    width: number
-    depth: number
+    height?: number
+    width?: number
+    depth?: number
   }
   weight?: number
   price: number

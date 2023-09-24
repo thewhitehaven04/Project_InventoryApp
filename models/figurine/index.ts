@@ -5,14 +5,14 @@ const FigurineSchema = new Schema<IFigurine>({
   name: { type: String, required: true },
   description: { type: String, required: true },
   dimensions: {
-    height: { type: Number, required: true },
-    width: { type: Number, required: true },
-    depth: { type: Number, required: true }
+    height: Number,
+    width: Number,
+    depth: Number
   },
   weight: Number,
   manufacturer: String,
-  age: { type: mongoose.Types.ObjectId, ref: 'age_category', required: true },
-  category: { type: mongoose.Types.ObjectId, ref: 'category', required: true },
+  age: { type: mongoose.Types.ObjectId, ref: 'AgeCategory', required: true },
+  category: { type: mongoose.Types.ObjectId, ref: 'Category', required: true },
   itemCountLeft: { type: Number, required: true },
   imageUrl: { type: String, required: true },
   price: { type: Number, required: true }

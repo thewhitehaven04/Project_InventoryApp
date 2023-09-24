@@ -4,10 +4,10 @@
   "description": "",
   "main": "app.ts",
   "scripts": {
-    "build": "npx tsc",
+    "build": "tsc && tsc-alias",
     "start": "node public/app.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q public/app.js\"",
-    "test": "standard && node my-tests.js"
+    "debug": "tsc && tsc-alias && node --inspect public/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -36,6 +36,7 @@
     "nodemon": "^3.0.1",
     "prettier-config-standard": "^7.0.0",
     "standard": "^17.1.0",
+    "tsc-alias": "^1.8.8",
     "typescript": "^5.2.2"
   }
 }

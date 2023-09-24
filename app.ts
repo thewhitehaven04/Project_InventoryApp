@@ -8,9 +8,10 @@ import path from 'path'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 
-import indexRouter from './routes/index'
-import usersRouter from './routes/users'
-import populateDb from './populate'
+import usersRouter from '@routes/users'
+import indexRouter from '@routes/index'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const app = express()
 
@@ -28,7 +29,7 @@ app.use('/', indexRouter)
 app.use('/users', usersRouter)
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function (req: Request, res: Response, next: NextFunction) {
   next(createError(404))
 })
 
