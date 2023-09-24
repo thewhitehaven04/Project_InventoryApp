@@ -1,0 +1,14 @@
+extends layout 
+
+block content 
+
+  h1=title
+
+  h2=category.name
+  p=category.description
+
+  ul 
+    li 
+      a(href=category._id + "/update") Update category
+    li 
+      a(href=category._id + "/delete") Delete category

@@ -1,0 +1,15 @@
+extends layout 
+
+block content 
+
+h2=title
+
+form(action="/update", method="post")
+  
+  label(for="name") Category name
+    input#name(type="text", name="name")
+  
+  label(for="Description") Description 
+    input#description(type="textarea", name="description")
+
+  button(type="submit") Submit changes

@@ -3,3 +3,10 @@ export default interface ICategory {
   description: string
   url?: string
 }
+export interface ICategoryListView {
+  categories: ICategory[]
+}
+
+export interface ICategoryView {
+  category: ICategory
+}

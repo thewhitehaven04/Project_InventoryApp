@@ -7,46 +7,47 @@ import express, {
 import path from 'path'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
-
-import usersRouter from '@routes/users'
 import indexRouter from '@routes/index'
 import dotenv from 'dotenv'
+import categoryRouter from '@routes/category'
+import { errorHandler, requestLogger } from 'utils/debug'
+import helmet from 'helmet'
+import mongoose from 'mongoose'
+
 dotenv.config()
 
 const app = express()
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'))
+mongoose.connect(process.env.CONN_STRING ?? '').catch((err: any) => {
+  console.error(err)
+})
+
+// setting up views
+app.set('views', path.join(__dirname, '../', 'views'))
 app.set('view engine', 'pug')
 
+// setting up middleware
 app.use(logger('dev'))
-app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(requestLogger)
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      'script-src': ["'self'", 'cdn.jsdelivr.net']
+    }
+  })
+)
 
+// setting up controllers
 app.use('/', indexRouter)
-app.use('/users', usersRouter)
+app.use('/category', categoryRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {
   next(createError(404))
 })
 
-// error handler
-app.use(function (
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void {
-  // set locals, only providing error in development
-  res.locals.message = err.message
-  res.locals.error = req.app.get('env') === 'development' ? err : {}
+app.use(errorHandler)
 
-  // render the error page
-  res.status(err.status || 500)
-  res.render('error')
-})
-
-export default app
+app.listen(process.env.PORT)
