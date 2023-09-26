@@ -2,14 +2,21 @@ extends layout
 
 block content 
 
-h2=title
+  h2=title
 
-form(action="/update", method="post")
-  
-  label(for="name") Category name
-    input#name(type="text", name="name")
-  
-  label(for="Description") Description 
-    input#description(type="textarea", name="description")
+  form(action="", method="post", class="container")
+    
+    label.row(for="name") Category name
+      input#name(type="text", name="name", value=category.name)
+    
+    label.row(for="Description") Description 
+      input#description(type="textarea", name="description" value=category.description)
 
-  button(type="submit") Submit changes
+    button.row(type="submit") Submit changes
+
+  if errors
+    span The following form fields contain validation errors: 
+    
+      ul 
+      each error in errors
+        li #{error.path}: #{error.msg} 

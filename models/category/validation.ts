@@ -7,14 +7,12 @@ const CATEGORY_VALIDATOR: Schema<DefaultSchemaKeys> = {
   name: {
     trim: true,
     notEmpty: true,
-    isAlphanumeric: true,
-    errorMessage: 'Name must be a non-empty alphanumeric string'
+    errorMessage: 'Category name must be a non-empty string'
   },
   description: {
     trim: true,
     notEmpty: true,
-    isAlphanumeric: true,
-    errorMessage: 'Description must be a non-empty alphanumeric string'
+    errorMessage: 'Category description must be a non-empty string'
   }
 }
 

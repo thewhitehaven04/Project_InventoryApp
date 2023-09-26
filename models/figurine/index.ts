@@ -18,5 +18,9 @@ const FigurineSchema = new Schema<IFigurine>({
   price: { type: Number, required: true }
 })
 
+FigurineSchema.virtual('url').get(function () {
+  return `/item/${this._id.toString()}`
+})
+
 const Figurine = model<IFigurine>('figurine', FigurineSchema)
 export default Figurine

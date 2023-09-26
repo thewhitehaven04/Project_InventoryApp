@@ -1,20 +1,24 @@
 import {
-  createCategory,
   getCategoryCreate,
+  getCategoryDelete,
   getCategoryDetail,
   getCategoryList,
   getCategoryUpdate,
-  updateCategory
+  postCategoryCreate,
+  postCategoryDelete,
+  postCategoryUpdate
 } from '@controllers/category'
 import { Router } from 'express'
 
 const categoryRouter = Router()
 
 categoryRouter.get('/all', getCategoryList)
-categoryRouter.get('/:id', getCategoryDetail)
 categoryRouter.get('/new', getCategoryCreate)
+categoryRouter.get('/:id', getCategoryDetail)
 categoryRouter.get('/:id/update', getCategoryUpdate)
-categoryRouter.post('/:id/update', ...updateCategory)
-categoryRouter.post('/new', ...createCategory)
+categoryRouter.get('/:id/delete', getCategoryDelete)
+categoryRouter.post('/new', ...postCategoryCreate)
+categoryRouter.post('/:id/update', ...postCategoryUpdate)
+categoryRouter.post('/:id/delete', postCategoryDelete)
 
 export default categoryRouter

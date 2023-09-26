@@ -2,21 +2,19 @@ import Category from '@models/category'
 import type ICategory from '@models/category/types'
 import {
   type ICategoryView,
-  type ICategoryListView
+  type ICategoryListView,
+  type IListOfItemWithCategoryView
 } from '@models/category/types'
 import CATEGORY_VALIDATOR from '@models/category/validation'
+import Figurine from '@models/figurine'
 import { type Request, type NextFunction, type Response } from 'express'
 import expressAsyncHandler from 'express-async-handler'
-import { body, validationResult } from 'express-validator'
+import { validationResult } from 'express-validator'
 import { checkSchema } from 'express-validator/src/middlewares/schema'
 import type ViewResponse from 'types/ViewResponse'
 
 const getCategoryList = expressAsyncHandler(
-  async (
-    req: Request,
-    res: ViewResponse<ICategoryListView>,
-    next: NextFunction
-  ) => {
+  async (req: Request, res: ViewResponse<ICategoryListView>) => {
     const categories = await Category.find({}, 'name').exec()
 
     res.render('categories_list', {
@@ -42,20 +40,20 @@ const getCategoryDetail = expressAsyncHandler(
 
     res.render('category_detail', {
       title: `Category details: ${category?.name}`,
-      category: { name: category?.name, description: category?.description }
+      category: {
+        name: category?.name ?? null,
+        description: category?.description ?? null,
+        url: category?.url
+      }
     })
   }
 )
 
 const getCategoryCreate = expressAsyncHandler(
-  async (
-    req: Request<{ id: string }, any, any, any>,
-    res: ViewResponse<ICategoryView>
-  ) => {
+  async (req: Request, res: ViewResponse<ICategoryView>) => {
     res.render('category_form', {
       title: 'Create new category',
-      category: { name: null, description: null },
-      errors: []
+      category: { name: null, description: null }
     })
   }
 )
@@ -70,7 +68,7 @@ const getCategoryUpdate = expressAsyncHandler(
 
     if (categoryToUpdate === null) {
       const err: any = new Error(
-        'There is no category with supplied id: ' + req.params.id
+        'There is no category with the supplied id: ' + req.params.id
       )
       err.status = 404
       next(err)
@@ -79,20 +77,20 @@ const getCategoryUpdate = expressAsyncHandler(
     res.render('category_form', {
       title: 'Update category',
       category: {
-        name: categoryToUpdate?.name,
-        description: categoryToUpdate?.description
-      }
+        name: categoryToUpdate?.name ?? null,
+        description: categoryToUpdate?.description ?? null
+      },
+      errors: []
     })
   }
 )
 
-const createCategory = [
+const postCategoryCreate = [
   checkSchema(CATEGORY_VALIDATOR),
   expressAsyncHandler(
     async (
       req: Request<any, any, ICategory, any>,
-      res: ViewResponse<ICategoryView>,
-      next: NextFunction
+      res: ViewResponse<ICategoryView>
     ) => {
       const errors = validationResult(req)
 
@@ -110,12 +108,12 @@ const createCategory = [
         description: req.body.description
       })
       await newCategory.save()
-      res.redirect('/all')
+      res.redirect('/category/all')
     }
   )
 ]
 
-const updateCategory = [
+const postCategoryUpdate = [
   checkSchema(CATEGORY_VALIDATOR),
   expressAsyncHandler(
     async (
@@ -135,7 +133,7 @@ const updateCategory = [
       }
 
       if (!err.isEmpty()) {
-        res.render('category_update', {
+        res.render('category_form', {
           title: `Update category: ${oldCategory?.name}`,
           category: { name: req.body.name, description: req.body.description },
           errors: err.array()
@@ -146,16 +144,67 @@ const updateCategory = [
         ...req.body,
         _id: req.params.id
       })
-      res.redirect('/all')
+      res.redirect('/category/all')
     }
   )
 ]
+
+const getCategoryDelete = expressAsyncHandler(
+  async (
+    req: Request<{ id: string }, any, any, any>,
+    res: ViewResponse<IListOfItemWithCategoryView>,
+    next: NextFunction
+  ) => {
+    const [categoryToDeleteOrNull, figurinesWithCategory] = await Promise.all([
+      Category.findById(req.params.id).exec(),
+      Figurine.find({ category: req.params.id }).exec()
+    ])
+
+    if (categoryToDeleteOrNull === null) {
+      const err: any = new Error(
+        "The category you're attempting to delete does not exist"
+      )
+      err.status = 404
+      next(err)
+      return
+    }
+
+    res.render('category_delete', {
+      title: `Delete category: ${categoryToDeleteOrNull?.name}`,
+      category: categoryToDeleteOrNull,
+      items: figurinesWithCategory
+    })
+  }
+)
+
+const postCategoryDelete = expressAsyncHandler(
+  async (
+    req: Request<{ id: string }, any, ICategory, any>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const existingCategoryOrNull = await Category.findById(req.params.id)
+
+    if (existingCategoryOrNull === null) {
+      const err: any = new Error(
+        "The category you're attempting to delete does not exist"
+      )
+      err.status = 404
+      next(err)
+      return
+    }
+    await existingCategoryOrNull.deleteOne()
+    res.redirect('/category/all')
+  }
+)
 
 export {
   getCategoryList,
   getCategoryDetail,
   getCategoryCreate,
   getCategoryUpdate,
-  createCategory,
-  updateCategory
+  getCategoryDelete,
+  postCategoryCreate,
+  postCategoryUpdate,
+  postCategoryDelete
 }

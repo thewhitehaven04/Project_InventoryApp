@@ -1,0 +1,15 @@
+extends layout 
+
+block content 
+
+  if category 
+    span There are items in this category. Please delete them before deleting the category.
+    ul
+      each item in items 
+        li
+          a(href=item.url)= item.name
+
+  else
+    span There are no items in this category. You can delete it safely.
+    form(method='post' action='')
+      button(type='submit') Delete
