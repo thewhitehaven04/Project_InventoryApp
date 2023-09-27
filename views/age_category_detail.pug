@@ -1,0 +1,14 @@
+extends layout 
+
+block content 
+
+  h1=title
+  h2=ageCategory.name
+
+  span #{ageCategory.min}-#{ageCategory.max} years old
+
+  ul 
+    li 
+      a(href='/' + ageCategory.url + "/update") Update age category 
+    li 
+      a(href='/' + ageCategory.url + "/delete") Delete age category 

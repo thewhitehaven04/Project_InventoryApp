@@ -1,0 +1,12 @@
+extends layout 
+
+block content 
+  h1 Categories 
+
+  ul(class="list-group")
+    each ageCategory in ageCategories 
+      li.list-group-item
+        a(href=ageCategory._id)= ageCategory.name
+
+    a(href='/ageCategory/new')
+      button(class="btn bg-primary text-light" type="button") Add new category 

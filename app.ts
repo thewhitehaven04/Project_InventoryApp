@@ -13,6 +13,7 @@ import categoryRouter from '@routes/category'
 import { errorHandler, requestLogger } from 'utils/debug'
 import helmet from 'helmet'
 import mongoose from 'mongoose'
+import ageCategoryRouter from '@routes/ageCategory'
 
 dotenv.config()
 
@@ -42,6 +43,7 @@ app.use(
 // setting up controllers
 app.use('/', indexRouter)
 app.use('/category', categoryRouter)
+app.use('/ageCategory', ageCategoryRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {
