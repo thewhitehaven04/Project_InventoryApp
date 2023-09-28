@@ -1,12 +1,12 @@
 extends layout 
 
 block content 
-  h1 Categories 
+  h1(class="text-3xl py-2") Categories 
 
-  ul(class="list-group")
+  ul(class="flex flex-col gap-y-2")
     each category in categories 
-      li.list-group-item
+      li
         a(href=category._id)= category.name
 
     a(href='/category/new')
-      button(class="btn bg-primary text-light" type="button") Add new category 
+      button(type="button") Add new category 

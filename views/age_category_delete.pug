@@ -1,0 +1,15 @@
+extends layout 
+
+block content 
+
+  if category 
+    span There are items for this age category. Please delete them before. 
+    ul
+      each item in items 
+        li
+          a(href=item.url)= item.name (item.min - item.max years old)
+
+  else
+    span There are no items for this category of age. You can delete it safely.
+    form(method='post' action='')
+      button(type='submit') Delete

@@ -108,7 +108,7 @@ const postCategoryCreate = [
         description: req.body.description
       })
       await newCategory.save()
-      res.redirect('/category/all')
+      res.redirect(`/category/${newCategory.id}/details`)
     }
   )
 ]
@@ -144,7 +144,7 @@ const postCategoryUpdate = [
         ...req.body,
         _id: req.params.id
       })
-      res.redirect('/category/all')
+      res.redirect(`/category/${req.params.id}/details`)
     }
   )
 ]

@@ -1,0 +1,25 @@
+extends layout 
+
+block content 
+
+  h2=title
+
+  form(action="", method="post")
+    
+    label.row(for="name") Age category 
+      input#name(type="text", name="name", value=ageCategory.name)
+    
+    label.row(for="min") Description 
+      input#min(type="textarea", name="min" value=ageCategory.min)
+    
+    label.row(for="max") Description 
+      input#max(type="textarea", name="max" value=ageCategory.max)
+
+    button.row(type="submit") Submit changes
+
+  if errors
+    span The following form fields contain validation errors: 
+    
+      ul 
+      each error in errors
+        li #{error.path}: #{error.msg}

@@ -35,7 +35,7 @@ app.use(requestLogger)
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      'script-src': ["'self'", 'cdn.jsdelivr.net']
+      'script-src': ["'self'", 'cdn.tailwindcss.com']
     }
   })
 )
