@@ -7,7 +7,7 @@
     "build": "tsc && tsc-alias",
     "start": "node public/app.js",
     "dev": "concurrently \"npx tsc -w\" \"npx tsc-alias -w\" \"nodemon -q public/app.js\"",
-    "debug": "tsc && tsc-alias && node --inspect public/app.js"
+    "debug": "tsc && tsc-alias && nodemon --inspect public/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "helmet": "^7.0.0",
     "mongoose": "^7.5.2",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "pug": "^3.0.2"
   },
   "devDependencies": {

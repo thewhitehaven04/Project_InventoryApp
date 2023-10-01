@@ -1,10 +1,11 @@
-import { type ObjectId } from 'mongoose'
+import type IAgeCategory from '@models/ageCategory/types'
+import type ICategory from '@models/category/types'
 
 export interface IFigurine {
   name: string
   description: string
-  age: ObjectId
-  category: ObjectId
+  age: IAgeCategory | null
+  category: ICategory
   manufacturer?: string
   dimensions: {
     height?: number
@@ -15,4 +16,16 @@ export interface IFigurine {
   price: number
   itemCountLeft: number
   imageUrl: string
+}
+
+export interface IFigurineMainView {
+  name: string
+  age: string
+  category: string
+  price: number
+  imageUrl: string
+}
+
+export interface IFigurineListView {
+  items: IFigurineMainView[]
 }

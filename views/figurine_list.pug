@@ -1,0 +1,20 @@
+extends layout
+
+block content
+
+  h1= title
+
+  each item in items
+    div(class="container")
+
+      img(src=item.imageUrl alt="Image")
+      
+      div(class="container d-flex flex-row justify-content-between")
+        
+        a(href=item.url)
+          span=item.name
+        
+        div(class="container d-flex flex-column align-items-start")
+          span $#{item.price}
+          span=item.age
+          span=item.category

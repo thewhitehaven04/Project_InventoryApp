@@ -4,13 +4,13 @@ block content
 
   h2=title
 
-  form(action="", method="post")
+  form(action="", method="post" class="form")
     
-    label.row(for="name") Category name
-      input#name(type="text", name="name", value=category.name)
+    label.row(for="name" class="form-label") Category name
+    input#name(type="text", name="name", value=category.name class="form-control")
     
-    label.row(for="Description") Description 
-      input#description(type="textarea", name="description" value=category.description)
+    label.row(for="Description" class="form-label") Description 
+    input#description(type="textarea", name="description" value=category.description class="form-control")
 
     button.row(type="submit") Submit changes
 

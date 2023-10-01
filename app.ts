@@ -14,6 +14,7 @@ import { errorHandler, requestLogger } from 'utils/debug'
 import helmet from 'helmet'
 import mongoose from 'mongoose'
 import ageCategoryRouter from '@routes/ageCategory'
+import { itemRouter } from '@routes/items'
 
 dotenv.config()
 
@@ -35,15 +36,16 @@ app.use(requestLogger)
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      'script-src': ["'self'", 'cdn.tailwindcss.com']
+      'script-src': ["'self'", 'cdn.jsdelivr.net']
     }
   })
 )
 
 // setting up controllers
 app.use('/', indexRouter)
-app.use('/category', categoryRouter)
-app.use('/ageCategory', ageCategoryRouter)
+app.use('/category/', categoryRouter)
+app.use('/ageCategory/', ageCategoryRouter)
+app.use('/items', itemRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {

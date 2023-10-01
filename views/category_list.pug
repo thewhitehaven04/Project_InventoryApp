@@ -3,11 +3,11 @@ extends layout
 block content 
   h1 Categories 
 
-  div(class="container")
+  div.container 
     ul(class="list-group")
-      each ageCategory in ageCategories 
+      each category in categories 
         li(class="list-group-item")
-          a(href=ageCategory._id)= ageCategory.name
+          a(href=category._id)= category.name
 
-    a(href='/ageCategory/new')
+    a(href='/category/new')
       button(type="button" class="btn btn-outline-primary") Add new category 

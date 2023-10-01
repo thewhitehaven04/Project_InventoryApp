@@ -17,7 +17,7 @@ const getCategoryList = expressAsyncHandler(
   async (req: Request, res: ViewResponse<ICategoryListView>) => {
     const categories = await Category.find({}, 'name').exec()
 
-    res.render('categories_list', {
+    res.render('category_list', {
       title: 'All categories',
       categories
     })

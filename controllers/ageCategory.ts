@@ -3,7 +3,8 @@ import type IAgeCategory from '@models/ageCategory/types'
 import {
   type IAgeCategoryReadView,
   type IAgeCategoryListView,
-  type IListOfItemWithAgeCategoryView
+  type IListOfItemWithAgeCategoryView,
+  type IAgeCategoryUpdateView
 } from '@models/ageCategory/types'
 import AGE_CATEGORY_VALIDATOR from '@models/ageCategory/validation'
 import Figurine from '@models/figurine'
@@ -38,11 +39,7 @@ const getAgeCategoryDetail = expressAsyncHandler(
 
     res.render('age_category_detail', {
       title: `Age category details: ${ageCategoryOrNull?.name}`,
-      ageCategory: {
-        name: ageCategoryOrNull.name,
-        min: ageCategoryOrNull.min,
-        max: ageCategoryOrNull.max
-      }
+      ageCategory: ageCategoryOrNull
     })
   }
 )
@@ -61,7 +58,7 @@ const postAgeCategoryCreate = [
   expressAsyncHandler(
     async (
       req: Request<any, any, IAgeCategory, any>,
-      res: ViewResponse<IAgeCategoryListView | IAgeCategoryReadView>
+      res: ViewResponse<IAgeCategoryListView | IAgeCategoryUpdateView>
     ) => {
       const err = validationResult(req)
 
@@ -85,7 +82,7 @@ const postAgeCategoryCreate = [
       })
       await ageCategory.save()
 
-      res.redirect(`/ageCategory/${req.params.id}/details`)
+      res.redirect('/ageCategory/all')
     }
   )
 ]
@@ -95,7 +92,7 @@ const postAgeCategoryUpdate = [
   expressAsyncHandler(
     async (
       req: Request<{ id: string }, any, IAgeCategory, any>,
-      res: ViewResponse<IAgeCategoryReadView | IAgeCategoryListView>,
+      res: ViewResponse<IAgeCategoryReadView | IAgeCategoryUpdateView>,
       next: NextFunction
     ) => {
       const err = validationResult(req)
@@ -114,11 +111,7 @@ const postAgeCategoryUpdate = [
       if (!err.isEmpty()) {
         res.render('age_category_form', {
           title: 'Update age category',
-          ageCategory: {
-            name: req.body.name,
-            min: req.body.min,
-            max: req.body.max
-          },
+          ageCategory: oldAgeCategoryOrNull,
           errors: err.array()
         })
       }
@@ -128,7 +121,7 @@ const postAgeCategoryUpdate = [
         _id: req.params.id
       }).exec()
 
-      res.redirect(`/ageCategory/${req.params.id}/details`)
+      res.redirect(`/ageCategory/${req.params.id}`)
     }
   )
 ]
@@ -176,18 +169,37 @@ const getAgeCategoryDelete = expressAsyncHandler(
       return
     }
 
-    res.render(
-      'age_category_delete',
-      {
-        title: 'Deleting age category',
-        ageCategory: {
-          name: ageCategoryToDeleteOrNull.name,
-          max: ageCategoryToDeleteOrNull.max,
-          min: ageCategoryToDeleteOrNull.min
-        },
-        items: itemsForThisAgeCategory
-      }
-    )
+    res.render('age_category_delete', {
+      title: 'Delete age category',
+      ageCategory: ageCategoryToDeleteOrNull,
+      items: itemsForThisAgeCategory
+    })
+  }
+)
+
+const getAgeCategoryUpdate = expressAsyncHandler(
+  async (
+    req: Request<{ id: string }, any, any, any>,
+    res: ViewResponse<IAgeCategoryReadView>,
+    next: NextFunction
+  ) => {
+    const ageCategoryToUpdateOrNull = await AgeCategory.findById(
+      req.params.id
+    ).exec()
+
+    if (ageCategoryToUpdateOrNull === null) {
+      const err: any = new Error(
+        "The age category you're attempting to update does not exist"
+      )
+      err.status = 404
+      next(err)
+      return
+    }
+
+    res.render('age_category_form', {
+      title: `Update age category: ${ageCategoryToUpdateOrNull?.name}`,
+      ageCategory: ageCategoryToUpdateOrNull
+    })
   }
 )
 
