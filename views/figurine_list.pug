@@ -11,10 +11,9 @@ block content
       
       div(class="container d-flex flex-row justify-content-between")
         
-        a(href=item.url)
-          span=item.name
+        a(href=item.url class="flex-grow-1")= item.name
         
-        div(class="container d-flex flex-column align-items-start")
+        div(class="d-flex flex-grow-0 flex-column align-items-end")
           span $#{item.price}
           span=item.age
           span=item.category

@@ -1,0 +1,30 @@
+extends layout 
+
+block content 
+
+  h1=Title
+
+  form(action="" method="POST" class="")
+
+    label(for="name") Name 
+    input(type="text" name="name" value=item.name)
+    
+    label(for="description") Description 
+    textarea(name="description" value=item.description)
+
+    fieldset Dimensions 
+      label(for="description") Height 
+      input#height(type="text" name="dimensions.height" value=item.dimensions.height)
+      label(for="width") Width 
+      input#width(type="text" name="dimensions.width" value=item.dimensions.width)
+      label(for="depth") Depth 
+      input#depth(type="text" name="dimensions.depth" value=item.dimensions.depth)
+      label(for="weight") Weight
+      input#weight(type="text" name="weight" value=item.weight)
+    
+    label(for="") Items in store
+
+  if errors
+    ul
+      each error in errors
+        li #{error.path}: #{error.msg}

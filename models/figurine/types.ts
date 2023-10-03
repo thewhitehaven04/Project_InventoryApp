@@ -4,7 +4,7 @@ import type ICategory from '@models/category/types'
 export interface IFigurine {
   name: string
   description: string
-  age: IAgeCategory | null
+  age: IAgeCategory
   category: ICategory
   manufacturer?: string
   dimensions: {
@@ -24,6 +24,15 @@ export interface IFigurineMainView {
   category: string
   price: number
   imageUrl: string
+  url: string
+}
+
+export interface IFigurineReadView {
+  item: IFigurine
+}
+
+export interface IFigurineUpdateView {
+  item: IFigurine | null
 }
 
 export interface IFigurineListView {

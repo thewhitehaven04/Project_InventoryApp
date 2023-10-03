@@ -7,7 +7,7 @@ block content
     ul(class="list-group")
       each ageCategory in ageCategories 
         li(class="list-group-item")
-          a(href=ageCategory._id)= ageCategory.name
+          a(href=ageCategory.id)= ageCategory.name
 
     a(href='/ageCategory/new')
       button(type="button" class="btn btn-outline-primary") Add new category 

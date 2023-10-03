@@ -1,7 +1,14 @@
 import Figurine from '@models/figurine'
-import { type IFigurineListView } from '@models/figurine/types'
-import { type Request } from 'express'
+import {
+  type IFigurineReadView,
+  type IFigurineListView,
+  type IFigurineUpdateView,
+  type IFigurine
+} from '@models/figurine/types'
+import FIGURINE_VALIDATOR from '@models/figurine/validation'
+import { type Response, type NextFunction, type Request } from 'express'
 import expressAsyncHandler from 'express-async-handler'
+import { checkSchema, validationResult } from 'express-validator'
 import type ViewResponse from 'types/ViewResponse'
 
 const getAllItems = expressAsyncHandler(
@@ -19,11 +26,166 @@ const getAllItems = expressAsyncHandler(
           age: fig.age.name,
           price: fig.price,
           category: fig.category.name,
-          imageUrl: fig.imageUrl
+          imageUrl: fig.imageUrl,
+          url: fig.get('url')
         }
       })
     })
   }
 )
 
-export { getAllItems }
+const getItemDetails = expressAsyncHandler(
+  async (
+    req: Request<{ id: string }, any, any, any>,
+    res: ViewResponse<IFigurineReadView>,
+    next: NextFunction
+  ) => {
+    const { id } = req.params
+    const figurineOrNull = await Figurine.findById(id).exec()
+
+    if (figurineOrNull === null) {
+      const err: any = new Error(`There is no figurine with id ${id}`)
+      err.status = 404
+      next(err)
+      return
+    }
+
+    res.render('figurine_detail', {
+      title: figurineOrNull.name,
+      item: figurineOrNull
+    })
+  }
+)
+
+const getItemFormUpdate = expressAsyncHandler(
+  async (
+    req: Request<{ id: string }, any, any, any>,
+    res: ViewResponse<IFigurineUpdateView>,
+    next: NextFunction
+  ) => {
+    const { id } = req.params
+    const figurineOrNull = await Figurine.findById(id).exec()
+
+    if (figurineOrNull === null) {
+      const err: any = new Error(`There is no figurine with id ${id}`)
+      err.status = 404
+      next(err)
+      return err
+    }
+
+    res.render('figurine_form', {
+      title: `Update figurine: ${figurineOrNull.name}`,
+      item: figurineOrNull
+    })
+  }
+)
+
+const getItemFormCreate = expressAsyncHandler(
+  async (
+    req: Request<any, any, any, any>,
+    res: ViewResponse<IFigurineUpdateView>
+  ) => {
+    res.render('figurine_form', {
+      title: 'Create a new figurine item',
+      item: null
+    })
+  }
+)
+
+const postItemDelete = expressAsyncHandler(
+  async (
+    req: Request<{ id: string }, any, any, any>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const figurineItemToDeleteOrNull = await Figurine.findById(
+      req.params.id
+    ).exec()
+
+    if (figurineItemToDeleteOrNull === null) {
+      const err: any = new Error(
+        `There is no item with given id: ${req.params.id}`
+      )
+      err.status = 404
+      next(err)
+      return
+    }
+
+    await figurineItemToDeleteOrNull.deleteOne()
+    res.redirect('item/all')
+  }
+)
+
+const postItemCreate = [
+  checkSchema(FIGURINE_VALIDATOR),
+  expressAsyncHandler(
+    async (
+      req: Request<any, any, IFigurine, any>,
+      res: Response | ViewResponse<IFigurineUpdateView>
+    ) => {
+      const err = validationResult(req)
+
+      if (!err.isEmpty()) {
+        res.render('figurine_form', {
+          title: 'Create a new figurine item',
+          item: req.body,
+          errors: err.array()
+        })
+        return
+      }
+
+      const figurine = new Figurine(req.body)
+      await figurine.save()
+
+      res.redirect(`item/${figurine.id}`)
+    }
+  )
+]
+
+const postItemUpdate = [
+  checkSchema(FIGURINE_VALIDATOR),
+  expressAsyncHandler(
+    async (
+      req: Request<{ id: string }, any, IFigurine, any>,
+      res: Response | ViewResponse<IFigurineUpdateView>,
+      next: NextFunction
+    ) => {
+      const err = validationResult(req)
+
+      if (!err.isEmpty()) {
+        res.render('figurine_form', {
+          title: 'Create a new figurine item',
+          item: req.body,
+          errors: err.array()
+        })
+        return
+      }
+
+      const figurineToUpdateOrNull = await Figurine.findById(
+        req.params.id
+      ).exec()
+
+      if (figurineToUpdateOrNull === null) {
+        const err: any = new Error(
+          `There is no figurine with given id: ${req.params.id}`
+        )
+        err.status = 404
+        next(err)
+        return
+      }
+
+      await figurineToUpdateOrNull.updateOne(req.body).exec()
+      res.redirect(`/item/${req.params.id}`)
+    }
+  )
+]
+
+export {
+  getAllItems,
+  getItemDetails,
+  getItemFormUpdate,
+  getItemFormCreate,
+  postItemDelete,
+  postItemCreate,
+  postItemUpdate
+}

@@ -4,4 +4,4 @@ Inventory app written in TypeScript/Express.
 ## Quick startup
 
 Run the app in development: 
-`npm install && npm run dev`
+`npm install && npm run dev`# Project_InventoryApp

@@ -11,15 +11,17 @@ html
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" 
     crossorigin="anonymous"
   )
-  body
 
-    nav
-      ul.nav
+  div(class="container-fluid d-flex flex-row") 
+
+    nav(class="col-1")
+      ul(class="nav d-flex flex-column")
         li.nav-item
           a(href='/category/all' class="nav-link") Categories
         li.nav-item
           a(href='/ageCategory/all' class="nav-link") Age categories
         li.nav-item
-          a(href='/items/all' class="nav-link") Figurines 
+          a(href='/item/all' class="nav-link") Figurines 
 
+    main
     block content
