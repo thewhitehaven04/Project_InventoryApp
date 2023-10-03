@@ -15,7 +15,9 @@ export interface IFigurine {
   weight?: number
   price: number
   itemCountLeft: number
-  imageUrl: string
+  // temporary change, remove nullable imageUrl
+  // once uploading images to web server is figured out
+  imageUrl: string | null
 }
 
 export interface IFigurineMainView {
@@ -33,6 +35,8 @@ export interface IFigurineReadView {
 
 export interface IFigurineUpdateView {
   item: IFigurine | null
+  ageOptions: IAgeCategory[]
+  categoryOptions: ICategory[]
 }
 
 export interface IFigurineListView {

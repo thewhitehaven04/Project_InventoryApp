@@ -4,25 +4,44 @@ block content
 
   h1=Title
 
-  form(action="" method="POST" class="")
+  form(action="" method="POST" class="form d-flex flex-column p-2")
 
-    label(for="name") Name 
-    input(type="text" name="name" value=item.name)
+    label(for="name" class="form-label") Name 
+    input(type="text" name="name" class="form-control" value=item ? item.name : null)
     
-    label(for="description") Description 
-    textarea(name="description" value=item.description)
+    label(for="description" class="form-label") Description 
+    textarea(name="description" class="form-control" value=item ? item.description : null)
 
-    fieldset Dimensions 
-      label(for="description") Height 
-      input#height(type="text" name="dimensions.height" value=item.dimensions.height)
-      label(for="width") Width 
-      input#width(type="text" name="dimensions.width" value=item.dimensions.width)
-      label(for="depth") Depth 
-      input#depth(type="text" name="dimensions.depth" value=item.dimensions.depth)
-      label(for="weight") Weight
-      input#weight(type="text" name="weight" value=item.weight)
+    label(for="age" class="form-label") Age
+    select#age(name="age" class="form-select")
+      each option in ageOptions 
+        option(value=option.id) #{option.name}
+
+    label(for="category" class="form-label") Category
+    select#category(name="category" class="form-select")
+      each category in categoryOptions 
+        option(value=category.id) #{category.name}
+
+    div Dimensions 
+      label(for="description" class="form-label") Height 
+      input#height(type="number" step=0.01 name="dimensions.height" class="form-control" value=item && item.dimensions ? item.dimensions.height : null)
+      label(for="width" class="form-label") Width 
+      input#width(type="number" step=0.01 name="dimensions.width" class="form-control" value=item && item.dimensions ? item.dimensions.width : null)
+      label(for="depth" class="form-label") Depth 
+      input#depth(type="number" step=0.01 name="dimensions.depth" class="form-control" value=item && item.dimensions ? item.dimensions.depth : null)
+      label(for="weight" class="form=label") Weight
+      input#weight(type="number" step=0.01 name="weight" class="form-control" value=item ? item.weight : null)
     
-    label(for="") Items in store
+    label(for="itemCountLeft" class="form-label") Items in store
+    input#itemCountLeft(type="number" min=0 step=1 name="itemCountLeft" class="form-control")
+    
+    label(for="price" class="form-label") Price 
+    input#price(type="number" min=0 step=0.01 name="price" class="form-control")
+
+    label(for="imageUrl" class="form-label")
+    input#imageUrl(type="file" name="imageUrl" class="form-control")
+    
+    button(type="submit" class="btn btn-outline-primary") Submit
 
   if errors
     ul

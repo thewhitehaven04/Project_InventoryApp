@@ -1,3 +1,5 @@
+import AgeCategory from '@models/ageCategory'
+import Category from '@models/category'
 import Figurine from '@models/figurine'
 import {
   type IFigurineReadView,
@@ -26,7 +28,7 @@ const getAllItems = expressAsyncHandler(
           age: fig.age.name,
           price: fig.price,
           category: fig.category.name,
-          imageUrl: fig.imageUrl,
+          imageUrl: fig.imageUrl ?? '',
           url: fig.get('url')
         }
       })
@@ -73,9 +75,16 @@ const getItemFormUpdate = expressAsyncHandler(
       return err
     }
 
+    const [ageOptions, categoryOptions] = await Promise.all([
+      AgeCategory.find().exec(),
+      Category.find().exec()
+    ])
+
     res.render('figurine_form', {
       title: `Update figurine: ${figurineOrNull.name}`,
-      item: figurineOrNull
+      item: figurineOrNull,
+      ageOptions,
+      categoryOptions
     })
   }
 )
@@ -85,9 +94,15 @@ const getItemFormCreate = expressAsyncHandler(
     req: Request<any, any, any, any>,
     res: ViewResponse<IFigurineUpdateView>
   ) => {
+    const [ageOptions, categoryOptions] = await Promise.all([
+      AgeCategory.find().exec(),
+      Category.find().exec()
+    ])
     res.render('figurine_form', {
       title: 'Create a new figurine item',
-      item: null
+      item: null,
+      ageOptions,
+      categoryOptions
     })
   }
 )
@@ -126,10 +141,16 @@ const postItemCreate = [
       const err = validationResult(req)
 
       if (!err.isEmpty()) {
+        const [ageOptions, categoryOptions] = await Promise.all([
+          AgeCategory.find().exec(),
+          Category.find().exec()
+        ])
         res.render('figurine_form', {
           title: 'Create a new figurine item',
           item: req.body,
-          errors: err.array()
+          errors: err.array(),
+          ageOptions,
+          categoryOptions
         })
         return
       }
@@ -153,9 +174,15 @@ const postItemUpdate = [
       const err = validationResult(req)
 
       if (!err.isEmpty()) {
+        const [ageOptions, categoryOptions] = await Promise.all([
+          AgeCategory.find().exec(),
+          Category.find().exec()
+        ])
         res.render('figurine_form', {
           title: 'Create a new figurine item',
           item: req.body,
+          ageOptions,
+          categoryOptions,
           errors: err.array()
         })
         return
