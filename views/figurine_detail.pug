@@ -2,24 +2,32 @@ extends layout
 
 block content
 
-  div(class="col-2") 
-    h1 !{title} figure
+  div(class="card p-2") 
+    img(src=item.imageUrl)
+    
+    div
+      h2= item.name
 
-    div(class="card") 
-      img(src=item.imageUrl)
+      div(class="d-flex flex-column") Dimensions
+        span Height (cm): #{item.height}
+        span Width (cm): #{item.width}
+        span Depth (cm): #{item.depth}
+        span Weight (kg): #{item.weight}
+
+      div(class="d-flex flex-column")
+        span Category: item.category
+        span Age: item.age
+
       div
-        h2= item.name
+        span Manufacturer #{item.manufacturer}
+        p= item.description
 
-        div(class="d-flex flex-column") Dimensions
-          span Height (cm): #{item.height}
-          span Width (cm): #{item.width}
-          span Depth (cm): #{item.depth}
-          span Weight (kg): #{item.weight}
+      div(class="d-flex flex-column") 
+        span $#{item.price}
+        span #{item.itemCountLeft} items left
 
-        div
-          span Manufacturer #{item.manufacturer}
-          p= item.description
+  form(action=item.url + "/delete" method='POST')
+    button(type="submit" class="btn btn-outline-primary") Delete item
 
-        div 
-          span $#{item.price}
-          span #{item.itemCountLeft} items left
+  a(href=item.url + "/update") 
+    button(type="button" class="btn btn-outline-primary") Update

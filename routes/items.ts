@@ -6,7 +6,7 @@ import {
   postItemCreate,
   postItemDelete,
   postItemUpdate
-} from '@controllers/item'
+} from '@controllers/item/index'
 import { Router } from 'express'
 
 const itemRouter = Router()

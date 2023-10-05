@@ -1,10 +1,5 @@
 import Category from '@models/category'
 import type ICategory from '@models/category/types'
-import {
-  type ICategoryView,
-  type ICategoryListView,
-  type IListOfItemWithCategoryView
-} from '@models/category/types'
 import CATEGORY_VALIDATOR from '@models/category/validation'
 import Figurine from '@models/figurine'
 import { type Request, type NextFunction, type Response } from 'express'
@@ -12,6 +7,12 @@ import expressAsyncHandler from 'express-async-handler'
 import { validationResult } from 'express-validator'
 import { checkSchema } from 'express-validator/src/middlewares/schema'
 import type ViewResponse from 'types/ViewResponse'
+import {
+  type ICategoryUpdateView,
+  type ICategoryListView,
+  type ICategoryReadView,
+  type IListOfItemWithCategoryView
+} from './types'
 
 const getCategoryList = expressAsyncHandler(
   async (req: Request, res: ViewResponse<ICategoryListView>) => {
@@ -27,7 +28,7 @@ const getCategoryList = expressAsyncHandler(
 const getCategoryDetail = expressAsyncHandler(
   async (
     req: Request<{ id: string }, any, any, any>,
-    res: ViewResponse<ICategoryView>,
+    res: ViewResponse<ICategoryReadView>,
     next: NextFunction
   ) => {
     const category = await Category.findById(req.params.id).exec()
@@ -36,24 +37,21 @@ const getCategoryDetail = expressAsyncHandler(
       const err: any = new Error('No such category found')
       err.status = 404
       next(err)
+      return
     }
 
     res.render('category_detail', {
       title: `Category details: ${category?.name}`,
-      category: {
-        name: category?.name ?? null,
-        description: category?.description ?? null,
-        url: category?.url
-      }
+      category
     })
   }
 )
 
 const getCategoryCreate = expressAsyncHandler(
-  async (req: Request, res: ViewResponse<ICategoryView>) => {
+  async (req: Request, res: ViewResponse<ICategoryUpdateView>) => {
     res.render('category_form', {
       title: 'Create new category',
-      category: { name: null, description: null }
+      category: null
     })
   }
 )
@@ -61,7 +59,7 @@ const getCategoryCreate = expressAsyncHandler(
 const getCategoryUpdate = expressAsyncHandler(
   async (
     req: Request<{ id: string }, any, any, any>,
-    res: ViewResponse<ICategoryView>,
+    res: ViewResponse<ICategoryUpdateView>,
     next: NextFunction
   ) => {
     const categoryToUpdate = await Category.findById(req.params.id).exec()
@@ -72,14 +70,12 @@ const getCategoryUpdate = expressAsyncHandler(
       )
       err.status = 404
       next(err)
+      return
     }
 
     res.render('category_form', {
       title: 'Update category',
-      category: {
-        name: categoryToUpdate?.name ?? null,
-        description: categoryToUpdate?.description ?? null
-      },
+      category: categoryToUpdate,
       errors: []
     })
   }
@@ -87,30 +83,25 @@ const getCategoryUpdate = expressAsyncHandler(
 
 const postCategoryCreate = [
   checkSchema(CATEGORY_VALIDATOR),
-  expressAsyncHandler(
-    async (
-      req: Request<any, any, ICategory, any>,
-      res: ViewResponse<ICategoryView>
-    ) => {
-      const errors = validationResult(req)
+  expressAsyncHandler(async (req: Request<any, any, ICategory, any>, res) => {
+    const errors = validationResult(req)
 
-      if (!errors.isEmpty()) {
-        res.render('category_update', {
-          title: 'Create new category',
-          category: { name: req.body.name, description: req.body.description },
-          errors: errors.array()
-        })
-        return
-      }
-
-      const newCategory = new Category({
-        name: req.body.name,
-        description: req.body.description
+    if (!errors.isEmpty()) {
+      res.render('category_update', {
+        title: 'Create new category',
+        category: { name: req.body.name, description: req.body.description },
+        errors: errors.array()
       })
-      await newCategory.save()
-      res.redirect(`/category/${newCategory.id}/details`)
+      return
     }
-  )
+
+    const newCategory = new Category({
+      name: req.body.name,
+      description: req.body.description
+    })
+    await newCategory.save()
+    res.redirect(`/category/${newCategory.id}/details`)
+  })
 ]
 
 const postCategoryUpdate = [
@@ -118,7 +109,7 @@ const postCategoryUpdate = [
   expressAsyncHandler(
     async (
       req: Request<{ id: string }, any, ICategory, any>,
-      res: ViewResponse<ICategoryView>,
+      res: ViewResponse<ICategoryUpdateView>,
       next: NextFunction
     ) => {
       const err = validationResult(req)

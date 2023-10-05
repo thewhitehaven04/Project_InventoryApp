@@ -3,7 +3,7 @@ import {
   type DefaultSchemaKeys
 } from 'express-validator/src/middlewares/schema'
 
-const FIGURINE_VALIDATOR: Schema<DefaultSchemaKeys> = {
+const FIGURINE_UPDATE_VALIDATOR: Schema<DefaultSchemaKeys> = {
   name: {
     trim: true,
     isString: true,
@@ -75,10 +75,12 @@ const FIGURINE_VALIDATOR: Schema<DefaultSchemaKeys> = {
       'Manufacturer must either be a string between 2 and 64 characters long, or null'
   },
   age: {
-    isUUID: true
+    optional: false,
+    errorMessage: 'Age category is a required attribute'
   },
   category: {
-    isUUID: true
+    optional: false,
+    errorMessage: 'Category is a required attribute'
   },
   itemCountLeft: {
     isInt: {
@@ -88,8 +90,9 @@ const FIGURINE_VALIDATOR: Schema<DefaultSchemaKeys> = {
       errorMessage: 'Enter a non-negative number to the "Item count" field'
     }
   },
-  imageUrl: {
-    isURL: true
+  image: {
+    optional: false,
+    isMultibyte: true
   },
   price: {
     isFloat: {
@@ -102,4 +105,4 @@ const FIGURINE_VALIDATOR: Schema<DefaultSchemaKeys> = {
   }
 }
 
-export default FIGURINE_VALIDATOR
+export default FIGURINE_UPDATE_VALIDATOR

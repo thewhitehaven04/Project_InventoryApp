@@ -2,13 +2,13 @@ extends layout
 
 block content 
 
-  h1=title
-  h2=ageCategory.name
+  div(class="card p-2")
+    h2=ageCategory.name
 
-  span #{ageCategory.min}-#{ageCategory.max} years old group
+    span #{ageCategory.min}-#{ageCategory.max} years old group
 
-  ul 
-    li 
-      a(href=ageCategory.url + "/update") Update age category 
-    li 
-      a(href=ageCategory.url + "/delete") Delete age category
+    ul 
+      li 
+        a(href=ageCategory.url + "/update") Update age category 
+      li 
+        a(href=ageCategory.url + "/delete") Delete age category

@@ -2,13 +2,11 @@ extends layout
 
 block content 
 
-  h1=title
+  div(class="card p-2")
+    p=category.description
 
-  h2=category.name
-  p=category.description
-
-  ul 
-    li 
-      a(href="/" + category.url + "/update") Update category
-    li 
-      a(href="/" + category.url + "/delete") Delete category
+    ul 
+      li 
+        a(href="/" + category.url + "/update") Update category
+      li 
+        a(href="/" + category.url + "/delete") Delete category

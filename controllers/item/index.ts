@@ -1,17 +1,18 @@
 import AgeCategory from '@models/ageCategory'
 import Category from '@models/category'
 import Figurine from '@models/figurine'
-import {
-  type IFigurineReadView,
-  type IFigurineListView,
-  type IFigurineUpdateView,
-  type IFigurine
-} from '@models/figurine/types'
 import FIGURINE_VALIDATOR from '@models/figurine/validation'
 import { type Response, type NextFunction, type Request } from 'express'
 import expressAsyncHandler from 'express-async-handler'
 import { checkSchema, validationResult } from 'express-validator'
+import { uploadImage } from 'middleware/utils/fileUpload'
 import type ViewResponse from 'types/ViewResponse'
+import {
+  type IFigurineReadView,
+  type IFigurineListView,
+  type IFigurineUpdateRequestModel,
+  type IFigurineUpdateView
+} from './types'
 
 const getAllItems = expressAsyncHandler(
   async (req: Request, res: ViewResponse<IFigurineListView>) => {
@@ -28,7 +29,7 @@ const getAllItems = expressAsyncHandler(
           age: fig.age.name,
           price: fig.price,
           category: fig.category.name,
-          imageUrl: fig.imageUrl ?? '',
+          imageUrl: fig.imageUrl,
           url: fig.get('url')
         }
       })
@@ -54,7 +55,11 @@ const getItemDetails = expressAsyncHandler(
 
     res.render('figurine_detail', {
       title: figurineOrNull.name,
-      item: figurineOrNull
+      item: {
+        ...figurineOrNull,
+        age: figurineOrNull.age.name,
+        category: figurineOrNull.category.name
+      }
     })
   }
 )
@@ -82,7 +87,11 @@ const getItemFormUpdate = expressAsyncHandler(
 
     res.render('figurine_form', {
       title: `Update figurine: ${figurineOrNull.name}`,
-      item: figurineOrNull,
+      item: {
+        ...figurineOrNull,
+        category: figurineOrNull.category.name,
+        age: figurineOrNull.age.name
+      },
       ageOptions,
       categoryOptions
     })
@@ -90,10 +99,7 @@ const getItemFormUpdate = expressAsyncHandler(
 )
 
 const getItemFormCreate = expressAsyncHandler(
-  async (
-    req: Request<any, any, any, any>,
-    res: ViewResponse<IFigurineUpdateView>
-  ) => {
+  async (req, res: ViewResponse<IFigurineUpdateView>) => {
     const [ageOptions, categoryOptions] = await Promise.all([
       AgeCategory.find().exec(),
       Category.find().exec()
@@ -127,15 +133,16 @@ const postItemDelete = expressAsyncHandler(
     }
 
     await figurineItemToDeleteOrNull.deleteOne()
-    res.redirect('item/all')
+    res.redirect('/item/all')
   }
 )
 
 const postItemCreate = [
   checkSchema(FIGURINE_VALIDATOR),
+  uploadImage.single('imageUrl'),
   expressAsyncHandler(
     async (
-      req: Request<any, any, IFigurine, any>,
+      req: Request<any, any, IFigurineUpdateRequestModel, any>,
       res: Response | ViewResponse<IFigurineUpdateView>
     ) => {
       const err = validationResult(req)
@@ -158,16 +165,17 @@ const postItemCreate = [
       const figurine = new Figurine(req.body)
       await figurine.save()
 
-      res.redirect(`item/${figurine.id}`)
+      res.redirect(`${figurine.id}`)
     }
   )
 ]
 
 const postItemUpdate = [
   checkSchema(FIGURINE_VALIDATOR),
+  uploadImage.single('imageUrl'),
   expressAsyncHandler(
     async (
-      req: Request<{ id: string }, any, IFigurine, any>,
+      req: Request<{ id: string }, any, IFigurineUpdateRequestModel, any>,
       res: Response | ViewResponse<IFigurineUpdateView>,
       next: NextFunction
     ) => {
@@ -202,7 +210,7 @@ const postItemUpdate = [
       }
 
       await figurineToUpdateOrNull.updateOne(req.body).exec()
-      res.redirect(`/item/${req.params.id}`)
+      res.redirect(`${req.params.id}`)
     }
   )
 ]

@@ -1,10 +1,11 @@
 extends layout 
 
 block content 
-  h1 Categories 
+
+  h1=title
 
   div(class="container")
-    ul(class="list-group")
+    ul(class="list-group mb-4")
       each ageCategory in ageCategories 
         li(class="list-group-item")
           a(href=ageCategory.id)= ageCategory.name

@@ -10,7 +10,7 @@ import logger from 'morgan'
 import indexRouter from '@routes/index'
 import dotenv from 'dotenv'
 import categoryRouter from '@routes/category'
-import { errorHandler, requestLogger } from 'utils/debug'
+import { errorHandler, requestLogger } from 'middleware/utils/debug'
 import helmet from 'helmet'
 import mongoose from 'mongoose'
 import ageCategoryRouter from '@routes/ageCategory'
@@ -30,7 +30,7 @@ app.set('view engine', 'pug')
 
 // setting up middleware
 app.use(logger('dev'))
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(requestLogger)
 app.use(
