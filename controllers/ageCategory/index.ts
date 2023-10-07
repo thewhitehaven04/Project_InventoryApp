@@ -1,17 +1,18 @@
 import AgeCategory from '@models/ageCategory'
 import type IAgeCategory from '@models/ageCategory/types'
-import {
-  type IAgeCategoryReadView,
-  type IAgeCategoryListView,
-  type IListOfItemWithAgeCategoryView,
-  type IAgeCategoryUpdateView
-} from '@models/ageCategory/types'
+import {} from '@models/ageCategory/types'
 import AGE_CATEGORY_VALIDATOR from '@models/ageCategory/validation'
 import Figurine from '@models/figurine'
 import { type NextFunction, type Request } from 'express'
 import expressAsyncHandler from 'express-async-handler'
 import { checkSchema, validationResult } from 'express-validator'
 import type ViewResponse from 'types/ViewResponse'
+import {
+  type IAgeCategoryListView,
+  type IAgeCategoryReadView,
+  type IAgeCategoryUpdateView,
+  type IListOfItemWithAgeCategoryView
+} from './types'
 
 const getAgeCategoryList = expressAsyncHandler(
   async (req: Request, res: ViewResponse<IAgeCategoryListView>) => {

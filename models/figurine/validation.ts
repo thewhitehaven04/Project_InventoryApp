@@ -23,7 +23,7 @@ const FIGURINE_UPDATE_VALIDATOR: Schema<DefaultSchemaKeys> = {
         min: 3,
         max: 512
       },
-      errorMessage: 'Name must be a string between 3 and 32 characters long'
+      errorMessage: 'Name must be a string between 3 and 512 characters long'
     }
   },
   'dimensions.height': {
@@ -90,9 +90,9 @@ const FIGURINE_UPDATE_VALIDATOR: Schema<DefaultSchemaKeys> = {
       errorMessage: 'Enter a non-negative number to the "Item count" field'
     }
   },
-  image: {
-    optional: false,
-    isMultibyte: true
+  imageUrl: {
+    isEmpty: false,
+    isString: true
   },
   price: {
     isFloat: {

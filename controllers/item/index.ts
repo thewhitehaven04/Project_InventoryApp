@@ -1,7 +1,6 @@
 import AgeCategory from '@models/ageCategory'
 import Category from '@models/category'
 import Figurine from '@models/figurine'
-import FIGURINE_VALIDATOR from '@models/figurine/validation'
 import { type Response, type NextFunction, type Request } from 'express'
 import expressAsyncHandler from 'express-async-handler'
 import { checkSchema, validationResult } from 'express-validator'
@@ -13,6 +12,9 @@ import {
   type IFigurineUpdateRequestModel,
   type IFigurineUpdateView
 } from './types'
+import type IAgeCategory from '@models/ageCategory/types'
+import type ICategory from '@models/category/types'
+import FIGURINE_UPDATE_VALIDATOR from '@models/figurine/validation'
 
 const getAllItems = expressAsyncHandler(
   async (req: Request, res: ViewResponse<IFigurineListView>) => {
@@ -44,10 +46,13 @@ const getItemDetails = expressAsyncHandler(
     next: NextFunction
   ) => {
     const { id } = req.params
-    const figurineOrNull = await Figurine.findById(id).exec()
+    const figurineOrNull = await Figurine.findById(id)
+      .populate<{ age: IAgeCategory }>('age')
+      .populate<{ category: ICategory }>('category')
+      .exec()
 
     if (figurineOrNull === null) {
-      const err: any = new Error(`There is no figurine with id ${id}`)
+      const err: any = new Error(`There is no figurine with id string ${id}`)
       err.status = 404
       next(err)
       return
@@ -56,9 +61,9 @@ const getItemDetails = expressAsyncHandler(
     res.render('figurine_detail', {
       title: figurineOrNull.name,
       item: {
-        ...figurineOrNull,
-        age: figurineOrNull.age.name,
-        category: figurineOrNull.category.name
+        ...figurineOrNull.toObject(),
+        category: figurineOrNull.category.name,
+        age: figurineOrNull.age.name
       }
     })
   }
@@ -138,8 +143,8 @@ const postItemDelete = expressAsyncHandler(
 )
 
 const postItemCreate = [
-  checkSchema(FIGURINE_VALIDATOR),
   uploadImage.single('imageUrl'),
+  checkSchema(FIGURINE_UPDATE_VALIDATOR),
   expressAsyncHandler(
     async (
       req: Request<any, any, IFigurineUpdateRequestModel, any>,
@@ -171,8 +176,8 @@ const postItemCreate = [
 ]
 
 const postItemUpdate = [
-  checkSchema(FIGURINE_VALIDATOR),
   uploadImage.single('imageUrl'),
+  checkSchema(FIGURINE_UPDATE_VALIDATOR),
   expressAsyncHandler(
     async (
       req: Request<{ id: string }, any, IFigurineUpdateRequestModel, any>,
