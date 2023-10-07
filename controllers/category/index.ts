@@ -125,7 +125,7 @@ const postCategoryUpdate = [
 
       if (!err.isEmpty()) {
         res.render('category_form', {
-          title: `Update category: ${oldCategory?.name}`,
+          title: 'Update category',
           category: { name: req.body.name, description: req.body.description },
           errors: err.array()
         })

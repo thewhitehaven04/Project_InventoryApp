@@ -4,11 +4,10 @@ block content
 
   h1=title
 
-  div(class="container")
-    ul(class="list-group mb-4")
-      each ageCategory in ageCategories 
-        li(class="list-group-item")
-          a(href=ageCategory.id)= ageCategory.name
+  ul(class="list-group mb-4")
+    each ageCategory in ageCategories 
+      li(class="list-group-item")
+        a(href=ageCategory.id)= ageCategory.name
 
-    a(href='/ageCategory/new')
-      button(type="button" class="btn btn-outline-primary") Add new category 
+  a(href='/ageCategory/new')
+    button(type="button" class="btn btn-outline-primary") Add new category 

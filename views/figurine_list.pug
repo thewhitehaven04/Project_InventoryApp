@@ -5,19 +5,22 @@ block content
   h1= title
 
   each item in items
-    div(class="container card d-flex flex-row p-2 mb-4")
-      div(class="col")
+    div(class="container card card-body d-flex flex-row mb-4")
+      div(class="col-2")
         img(src=item.imageUrl alt="Image" class="img-thumbnail img-fluid rounded")
       
-      div(class="col")
+      div(class="col-10")
         div(class="container d-flex flex-row justify-content-between")
           
-          a(href=item.url class="flex-grow-1")= item.name
+          div.container 
+            a(href=item.url class="card-title flex-grow-1")= item.name
+            
+            div(class="d-flex flex-column flex-align-items-start")
+              span="Age category: " + item.age
+              span="Figurine type: " + item.category
           
           div(class="d-flex flex-grow-0 flex-column align-items-end")
             span $#{item.price}
-            span=item.age
-            span=item.category
 
   a(href='/item/new')
     button(type="button" class="btn btn-outline-primary") Add new item 

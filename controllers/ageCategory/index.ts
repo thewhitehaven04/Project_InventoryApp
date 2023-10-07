@@ -39,7 +39,7 @@ const getAgeCategoryDetail = expressAsyncHandler(
     }
 
     res.render('age_category_detail', {
-      title: `Age category details: ${ageCategoryOrNull?.name}`,
+      title: 'Age category details',
       ageCategory: ageCategoryOrNull
     })
   }

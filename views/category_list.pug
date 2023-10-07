@@ -3,11 +3,10 @@ extends layout
 block content 
   h1 Categories 
 
-  div.container 
-    ul(class="list-group mb-4")
-      each category in categories 
-        li(class="list-group-item")
-          a(href=category.id)= category.name
+  ul(class="list-group mb-4")
+    each category in categories 
+      li(class="list-group-item")
+        a(href=category.id)= category.name
 
-    a(href='/category/new')
-      button(type="button" class="btn btn-outline-primary") Add new category 
+  a(href='/category/new')
+    button(type="button" class="btn btn-outline-primary") Add new category 

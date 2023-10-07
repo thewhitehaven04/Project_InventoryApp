@@ -1,14 +1,19 @@
 extends layout 
 
 block content 
+  
+  h1=title
 
-  div(class="card p-2")
-    h2=ageCategory.name
+  div(class="card d-flex flex-row justify-content-between gap-2 p-2 mb-2")
+    div 
+      h2=ageCategory.name
+      span #{ageCategory.min}-#{ageCategory.max} years old age group
 
-    span #{ageCategory.min}-#{ageCategory.max} years old group
+    div(class="d-flex flex-column gap-2") 
+      button(class="btn btn-outline-primary")
+        a(href=ageCategory.url + "/update") 
+          i(class="bi bi bi-pencil-fill")
 
-    ul 
-      li 
-        a(href=ageCategory.url + "/update") Update age category 
-      li 
-        a(href=ageCategory.url + "/delete") Delete age category
+      button(class="btn btn-outline-primary")
+        a(href=ageCategory.url + "/delete") 
+          i(class="bi bi-trash3")

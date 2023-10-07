@@ -1,12 +1,14 @@
 extends layout 
 
 block content 
+  
+  h1=title
 
   if category 
     span There are items in this category. Please delete them before deleting the category.
-    ul
+    ul(class="list-group mb-4")
       each item in items 
-        li
+        li(class="list-group-item")
           a(href=item.url)= item.name
 
   else

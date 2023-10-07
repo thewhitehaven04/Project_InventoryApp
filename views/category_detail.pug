@@ -2,11 +2,16 @@ extends layout
 
 block content 
 
-  div(class="card p-2")
-    p=category.description
+  div(class="card d-flex flex-row justify-content-between gap-2 p-2 mb-2")
+    div
+      h2=category.name
+      p=category.description
+    
+    div(class="d-flex flex-column gap-2") 
+      button(class="btn btn-outline-primary")
+        a(href="/" + category.url + "/update") 
+          i(class="bi bi bi-pencil-fill")
 
-    ul 
-      li 
-        a(href="/" + category.url + "/update") Update category
-      li 
-        a(href="/" + category.url + "/delete") Delete category
+      button(class="btn btn-outline-primary")
+        a(href="/" + category.url + "/delete") 
+          i(class="bi bi-trash3")

@@ -2,33 +2,40 @@ extends layout
 
 block content
 
-  div(class="card p-2") 
-    img(src=item.imageUrl)
+  div(class="container container-fluid card card-body d-flex flex-row") 
+    img(src=item.imageUrl class='img-thumbnail img-fluid rounded img-rounded me-2 col-3')
     
-    div
-      h2= item.name
+    div(class="col-9")
+      div(class="d-flex flex-col justify-content-between")
+        h2(class="card-title fs-2 mb-3")= item.name
+        span(class="card-subtitle fs-2") $#{item.price}
 
-      div(class="d-flex flex-column") Dimensions
-        - const {height, width, depth} = item.dimensions
-        span= 'Height (cm):' + (height ? height : 'No information')
-        span= 'Width (cm):' + (width ? width : 'No information')
-        span= 'Depth (cm):' + (depth ? depth : 'No information')
-        span= 'Weight (kg):' + (item.weight ? item.weight : 'No information')
+      p(class="card-text text-wrap mb-3")= item.description
 
-      div(class="d-flex flex-column")
-        span Category: #{item.category}
-        span Age: #{item.age}
+      div(class="d-flex flex-col mb-3")  
+        div(class="col d-flex flex-column") Dimensions:
+          - const {height, width, depth} = item.dimensions
+          span= 'Height (cm): ' + (height ? height : 'No information')
+          span= 'Width (cm): ' + (width ? width : 'No information')
+          span= 'Depth (cm): ' + (depth ? depth : 'No information')
+          span= 'Weight (kg): ' + (item.weight ? item.weight : 'No information')
+        
+        div(class="col")
+          div(class="d-flex flex-column")
+            span Category: #{item.category}
+            span Age: #{item.age}
 
-      div
-        span Manufacturer #{item.manufacturer}
-        p= item.description
+          div
+            span Manufacturer: #{item.manufacturer}
+        
+          div(class="d-flex flex-column") 
+            span No. of items in storage: #{item.itemCountLeft}
 
-      div(class="d-flex flex-column") 
-        span $#{item.price}
-        span #{item.itemCountLeft} items left
+      div(class="d-flex flex-col")
+        a(href=item.url + "/update") 
+          button(type="button" class="btn btn-outline-primary")
+            i(class="bi bi bi-pencil-fill")
 
-  form(action=item.url + "/delete" method='POST')
-    button(type="submit" class="btn btn-outline-primary") Delete item
-
-  a(href=item.url + "/update") 
-    button(type="button" class="btn btn-outline-primary") Update
+        form(action=item.url + "/delete" method='POST')
+          button(type="submit" class="btn btn-outline-primary me-2")
+            i(class="bi bi-trash3")

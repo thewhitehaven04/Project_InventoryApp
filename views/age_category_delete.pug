@@ -1,12 +1,14 @@
 extends layout 
 
 block content 
+  
+  h1=title
 
   if ageCategory 
     span There are items for this age category. Please delete them before. 
-    ul
+    ul(class="list-group mb-4")
       each item in items 
-        li
+        li(class="list-group-item")
           a(href=item.url) #{item.name} (#{ageCategory.min} - #{ageCategory.max} years old)
 
   else
