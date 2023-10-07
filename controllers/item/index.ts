@@ -76,7 +76,10 @@ const getItemFormUpdate = expressAsyncHandler(
     next: NextFunction
   ) => {
     const { id } = req.params
-    const figurineOrNull = await Figurine.findById(id).exec()
+    const figurineOrNull = await Figurine.findById(id)
+      .populate<{ age: IAgeCategory }>('age')
+      .populate<{ category: ICategory }>('category')
+      .exec()
 
     if (figurineOrNull === null) {
       const err: any = new Error(`There is no figurine with id ${id}`)
@@ -93,7 +96,7 @@ const getItemFormUpdate = expressAsyncHandler(
     res.render('figurine_form', {
       title: `Update figurine: ${figurineOrNull.name}`,
       item: {
-        ...figurineOrNull,
+        ...figurineOrNull.toObject(),
         category: figurineOrNull.category.name,
         age: figurineOrNull.age.name
       },
@@ -170,7 +173,7 @@ const postItemCreate = [
       const figurine = new Figurine(req.body)
       await figurine.save()
 
-      res.redirect(`${figurine.id}`)
+      res.redirect(`/item/${figurine.id}`)
     }
   )
 ]
@@ -214,8 +217,13 @@ const postItemUpdate = [
         return
       }
 
-      await figurineToUpdateOrNull.updateOne(req.body).exec()
-      res.redirect(`${req.params.id}`)
+      await figurineToUpdateOrNull
+        .updateOne({
+          ...req.body,
+          imageUrl: req.body.imageUrl ?? figurineToUpdateOrNull.imageUrl
+        })
+        .exec()
+      res.redirect(`/item/${req.params.id}`)
     }
   )
 ]
