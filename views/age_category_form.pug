@@ -3,21 +3,18 @@ extends layout
 block content 
 
   h1=title
-  form(method="post" class="container-sm mx-4") 
+  form(method="post" action='' class="form") 
+    div(class="card card-body")
+      label(for="name" class="form-label") Age category 
+        input#name(type="text", name="name" class="form-control border-1 rounded-2" value=ageCategory ? ageCategory.name : null)
 
-    div.mb-3
-      label.row(for="name" class="form-label") Age category 
-      input#name(type="text", name="name" class="form-control border-1 rounded-2" value=ageCategory ? ageCategory.name : null)
-
-    div.mb-3
-      label.row(for="min" class="form-label") Minimum age
-      input#min(type="number", name="min" class="form-control border-1 rounded-2" value=ageCategory ? ageCategory.min : null)
+      label(for="min" class="form-label") Minimum age
+        input#min(type="number", name="min" class="form-control border-1 rounded-2" value=ageCategory ? ageCategory.min : null)
     
-    div.mb-3
-      label.row(for="max" class="form-label") Maximum age 
-      input#max(type="number", name="max" class="form-control border-1 rounded-2" value=ageCategory ? ageCategory.max : null)
+      label(for="max" class="form-label mb-3") Maximum age 
+        input#max(type="number", name="max" class="form-control border-1 rounded-2" value=ageCategory ? ageCategory.max : null)
 
-    button.row(type="submit" class="btn btn-outline-primary") Submit changes
+      button(type="submit" class="btn btn-outline-primary") Submit changes
 
   if errors
     span The following form fields contain validation errors: 

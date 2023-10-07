@@ -10,10 +10,10 @@ block content
       span #{ageCategory.min}-#{ageCategory.max} years old age group
 
     div(class="d-flex flex-column gap-2") 
-      button(class="btn btn-outline-primary")
-        a(href=ageCategory.url + "/update") 
+      a(href=ageCategory.url + "/update") 
+        button(class="btn btn-outline-primary")
           i(class="bi bi bi-pencil-fill")
 
-      button(class="btn btn-outline-primary")
-        a(href=ageCategory.url + "/delete") 
+      a(href=ageCategory.url + "/delete") 
+        button(class="btn btn-outline-primary")
           i(class="bi bi-trash3")

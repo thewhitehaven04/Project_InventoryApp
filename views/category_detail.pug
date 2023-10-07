@@ -8,10 +8,10 @@ block content
       p=category.description
     
     div(class="d-flex flex-column gap-2") 
-      button(class="btn btn-outline-primary")
-        a(href="/" + category.url + "/update") 
+      a(href="/" + category.url + "/update") 
+        button(class="btn btn-outline-primary")
           i(class="bi bi bi-pencil-fill")
 
-      button(class="btn btn-outline-primary")
-        a(href="/" + category.url + "/delete") 
+      a(href="/" + category.url + "/delete") 
+        button(class="btn btn-outline-primary")
           i(class="bi bi-trash3")

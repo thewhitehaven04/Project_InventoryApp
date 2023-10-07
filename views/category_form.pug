@@ -5,14 +5,15 @@ block content
   h2=title
 
   form(action="", method="post" class="form")
-    
-    label.row(for="name" class="form-label") Category name
-    input#name(type="text", name="name", value=category.name class="form-control")
-    
-    label.row(for="Description" class="form-label") Description 
-    input#description(type="textarea", name="description" value=category.description class="form-control")
+    div(class="card card-body") 
 
-    button.row(type="submit") Submit changes
+      label(for="name" class="form-label") Category name
+        input#name(type="text", name="name", value=category.name class="form-control")
+      
+      label(for="Description" class="form-label") Description 
+        input#description(type="textarea", name="description" value=category.description class="form-control")
+
+      button(type="submit" class="btn btn-outline-primary") Submit changes
 
   if errors
     span The following form fields contain validation errors: 
