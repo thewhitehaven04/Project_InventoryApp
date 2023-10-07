@@ -6,13 +6,15 @@ import { type Request, type NextFunction, type Response } from 'express'
 import expressAsyncHandler from 'express-async-handler'
 import { validationResult } from 'express-validator'
 import { checkSchema } from 'express-validator/src/middlewares/schema'
-import type ViewResponse from 'types/ViewResponse'
+import type ViewResponse from '@controllers/types/ViewResponse'
 import {
   type ICategoryUpdateView,
   type ICategoryListView,
   type ICategoryReadView,
   type IListOfItemWithCategoryView
 } from './types'
+import ApplicationError from '@controllers/errors/applicationError'
+import { ErrorCode } from '@controllers/errors/errorCodes'
 
 const getCategoryList = expressAsyncHandler(
   async (req: Request, res: ViewResponse<ICategoryListView>) => {
@@ -34,9 +36,7 @@ const getCategoryDetail = expressAsyncHandler(
     const category = await Category.findById(req.params.id).exec()
 
     if (category === null) {
-      const err: any = new Error('No such category found')
-      err.status = 404
-      next(err)
+      next(new ApplicationError('No such category found', ErrorCode.NOT_FOUND))
       return
     }
 
@@ -65,11 +65,12 @@ const getCategoryUpdate = expressAsyncHandler(
     const categoryToUpdate = await Category.findById(req.params.id).exec()
 
     if (categoryToUpdate === null) {
-      const err: any = new Error(
-        'There is no category with the supplied id: ' + req.params.id
+      next(
+        new ApplicationError(
+          'There is no category with the supplied id: ' + req.params.id,
+          ErrorCode.NOT_FOUND
+        )
       )
-      err.status = 404
-      next(err)
       return
     }
 
@@ -116,11 +117,13 @@ const postCategoryUpdate = [
       const oldCategory = await Category.findById(req.params.id).exec()
 
       if (oldCategory === null) {
-        const error: any = new Error(
-          'The category being updated does not exist'
+        next(
+          new ApplicationError(
+            'The category that is being attempted to update not found',
+            ErrorCode.NOT_FOUND
+          )
         )
-        error.status = 404
-        next(error)
+        return
       }
 
       if (!err.isEmpty()) {
@@ -152,11 +155,12 @@ const getCategoryDelete = expressAsyncHandler(
     ])
 
     if (categoryToDeleteOrNull === null) {
-      const err: any = new Error(
-        "The category you're attempting to delete does not exist"
+      next(
+        new ApplicationError(
+          "The category you're attempting to delete does not exist",
+          ErrorCode.NOT_FOUND
+        )
       )
-      err.status = 404
-      next(err)
       return
     }
 
@@ -177,11 +181,12 @@ const postCategoryDelete = expressAsyncHandler(
     const existingCategoryOrNull = await Category.findById(req.params.id)
 
     if (existingCategoryOrNull === null) {
-      const err: any = new Error(
-        "The category you're attempting to delete does not exist"
+      next(
+        new ApplicationError(
+          "The category you're attempting to delete does not exist",
+          ErrorCode.NOT_FOUND
+        )
       )
-      err.status = 404
-      next(err)
       return
     }
     await existingCategoryOrNull.deleteOne()

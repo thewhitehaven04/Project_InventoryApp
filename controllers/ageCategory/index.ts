@@ -6,13 +6,15 @@ import Figurine from '@models/figurine'
 import { type NextFunction, type Request } from 'express'
 import expressAsyncHandler from 'express-async-handler'
 import { checkSchema, validationResult } from 'express-validator'
-import type ViewResponse from 'types/ViewResponse'
+import type ViewResponse from '@controllers/types/ViewResponse'
 import {
   type IAgeCategoryListView,
   type IAgeCategoryReadView,
   type IAgeCategoryUpdateView,
   type IListOfItemWithAgeCategoryView
 } from './types'
+import ApplicationError from '@controllers/errors/applicationError'
+import { ErrorCode } from '@controllers/errors/errorCodes'
 
 const getAgeCategoryList = expressAsyncHandler(
   async (req: Request, res: ViewResponse<IAgeCategoryListView>) => {
@@ -28,14 +30,19 @@ const getAgeCategoryList = expressAsyncHandler(
 const getAgeCategoryDetail = expressAsyncHandler(
   async (
     req: Request<{ id: string }, any, any, any>,
-    res: ViewResponse<IAgeCategoryReadView>
+    res: ViewResponse<IAgeCategoryReadView>,
+    next: NextFunction
   ) => {
     const ageCategoryOrNull = await AgeCategory.findById(req.params.id).exec()
 
     if (ageCategoryOrNull === null) {
-      const err: any = new Error('There is no such category of age')
-      err.status = 404
-      return err
+      next(
+        new ApplicationError(
+          'There is no such category of age',
+          ErrorCode.NOT_FOUND
+        )
+      )
+      return
     }
 
     res.render('age_category_detail', {
@@ -102,11 +109,13 @@ const postAgeCategoryUpdate = [
       ).exec()
 
       if (oldAgeCategoryOrNull === null) {
-        const error: any = new Error(
-          "The age category you're attempting to update does not exist"
+        next(
+          new ApplicationError(
+            "The age category you're attempting to update does not exist",
+            ErrorCode.NOT_FOUND
+          )
         )
-        error.status = 404
-        next(error)
+        return
       }
 
       if (!err.isEmpty()) {
@@ -138,11 +147,12 @@ const postAgeCategoryDelete = expressAsyncHandler(
     ).exec()
 
     if (ageCategoryToDeleteOrNull === null) {
-      const err: any = new Error(
-        "The age category you're attempting to delete does not exist"
+      next(
+        new ApplicationError(
+          "The age category you're attempting to delete does not exist",
+          ErrorCode.NOT_FOUND
+        )
       )
-      err.status = 404
-      next(err)
       return
     }
 
@@ -164,9 +174,12 @@ const getAgeCategoryDelete = expressAsyncHandler(
       ])
 
     if (ageCategoryToDeleteOrNull === null) {
-      const err: any = new Error('There is no such age category')
-      err.status = 404
-      next(err)
+      next(
+        new ApplicationError(
+          'There is no such age category',
+          ErrorCode.NOT_FOUND
+        )
+      )
       return
     }
 
@@ -189,11 +202,12 @@ const getAgeCategoryUpdate = expressAsyncHandler(
     ).exec()
 
     if (ageCategoryToUpdateOrNull === null) {
-      const err: any = new Error(
-        "The age category you're attempting to update does not exist"
+      next(
+        new ApplicationError(
+          "The age category you're attempting to update does not exist",
+          ErrorCode.NOT_FOUND
+        )
       )
-      err.status = 404
-      next(err)
       return
     }
 

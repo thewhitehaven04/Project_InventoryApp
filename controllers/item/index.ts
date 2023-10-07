@@ -5,7 +5,7 @@ import { type Response, type NextFunction, type Request } from 'express'
 import expressAsyncHandler from 'express-async-handler'
 import { checkSchema, validationResult } from 'express-validator'
 import { uploadImage } from 'middleware/utils/fileUpload'
-import type ViewResponse from 'types/ViewResponse'
+import type ViewResponse from '@controllers/types/ViewResponse'
 import {
   type IFigurineReadView,
   type IFigurineListView,
@@ -15,6 +15,8 @@ import {
 import type IAgeCategory from '@models/ageCategory/types'
 import type ICategory from '@models/category/types'
 import FIGURINE_UPDATE_VALIDATOR from '@models/figurine/validation'
+import ApplicationError from '@controllers/errors/applicationError'
+import { ErrorCode } from '@controllers/errors/errorCodes'
 
 const getAllItems = expressAsyncHandler(
   async (req: Request, res: ViewResponse<IFigurineListView>) => {
@@ -52,9 +54,12 @@ const getItemDetails = expressAsyncHandler(
       .exec()
 
     if (figurineOrNull === null) {
-      const err: any = new Error(`There is no figurine with id string ${id}`)
-      err.status = 404
-      next(err)
+      next(
+        new ApplicationError(
+          `There is no figurine with id string ${id}`,
+          ErrorCode.NOT_FOUND
+        )
+      )
       return
     }
 
@@ -82,10 +87,13 @@ const getItemFormUpdate = expressAsyncHandler(
       .exec()
 
     if (figurineOrNull === null) {
-      const err: any = new Error(`There is no figurine with id ${id}`)
-      err.status = 404
-      next(err)
-      return err
+      next(
+        new ApplicationError(
+          `There is no figurine with id ${id}`,
+          ErrorCode.NOT_FOUND
+        )
+      )
+      return
     }
 
     const [ageOptions, categoryOptions] = await Promise.all([
@@ -209,11 +217,12 @@ const postItemUpdate = [
       ).exec()
 
       if (figurineToUpdateOrNull === null) {
-        const err: any = new Error(
-          `There is no figurine with given id: ${req.params.id}`
+        next(
+          new ApplicationError(
+            `There is no figurine with given id: ${req.params.id}`,
+            ErrorCode.NOT_FOUND
+          )
         )
-        err.status = 404
-        next(err)
         return
       }
 

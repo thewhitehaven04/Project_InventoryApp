@@ -5,11 +5,7 @@ import { join } from 'path'
 
 const figurineImageStorage = multer.diskStorage({
   destination: join(__dirname, './../../resources/images'),
-  filename: function (
-    req: Request<any, any, UploadImageRequestBody, any>,
-    file,
-    cb
-  ) {
+  filename: (req: Request<any, any, UploadImageRequestBody, any>, file, cb) => {
     const filenameSplit = file.originalname.split('.')
     const filename =
       filenameSplit[0] + '_' + Date.now() + '.' + filenameSplit[1]
