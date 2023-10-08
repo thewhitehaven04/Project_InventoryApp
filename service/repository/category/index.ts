@@ -13,7 +13,7 @@ export async function getCategory (
   | null
   > {
   const category = await Category.findById(id).exec()
-  throwErrorIfNull(category, `No category with id ${id} found`, next)
+  throwErrorIfNull(category, `No category found with id ${id}`, next)
   return category
 }
 

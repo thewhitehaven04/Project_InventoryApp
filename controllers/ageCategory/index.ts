@@ -1,4 +1,3 @@
-import AgeCategory from '@models/ageCategory'
 import type IAgeCategory from '@models/ageCategory/types'
 import {} from '@models/ageCategory/types'
 import AGE_CATEGORY_VALIDATOR from '@models/ageCategory/validation'
@@ -13,12 +12,11 @@ import {
   type IAgeCategoryUpdateView,
   type IListOfItemWithAgeCategoryView
 } from './types'
-import ApplicationError from '@controllers/errors/applicationError'
-import { ErrorCode } from '@controllers/errors/errorCodes'
+import * as AgeCategoryRepository from '@repository/ageCategory'
 
 const getAgeCategoryList = expressAsyncHandler(
   async (req: Request, res: ViewResponse<IAgeCategoryListView>) => {
-    const ageCategoryList = await AgeCategory.find().exec()
+    const ageCategoryList = await AgeCategoryRepository.getAllCategories()
 
     res.render('age_category_list', {
       title: 'Age categories',
@@ -33,22 +31,18 @@ const getAgeCategoryDetail = expressAsyncHandler(
     res: ViewResponse<IAgeCategoryReadView>,
     next: NextFunction
   ) => {
-    const ageCategoryOrNull = await AgeCategory.findById(req.params.id).exec()
+    const { id } = req.params
 
-    if (ageCategoryOrNull === null) {
-      next(
-        new ApplicationError(
-          'There is no such category of age',
-          ErrorCode.NOT_FOUND
-        )
-      )
-      return
+    const ageCategoryOrNull = await AgeCategoryRepository.getAgeCategory(
+      id,
+      next
+    )
+    if (ageCategoryOrNull !== null) {
+      res.render('age_category_detail', {
+        title: 'Age category details',
+        ageCategory: ageCategoryOrNull
+      })
     }
-
-    res.render('age_category_detail', {
-      title: 'Age category details',
-      ageCategory: ageCategoryOrNull
-    })
   }
 )
 
@@ -73,23 +67,13 @@ const postAgeCategoryCreate = [
       if (!err.isEmpty()) {
         res.render('age_category_form', {
           title: 'Create new age category',
-          ageCategory: {
-            name: req.body.name,
-            min: req.body.min,
-            max: req.body.max
-          },
+          ageCategory: req.body,
           errors: err.array()
         })
         return
       }
 
-      const ageCategory = new AgeCategory({
-        name: req.body.name,
-        min: req.body.min,
-        max: req.body.max
-      })
-      await ageCategory.save()
-
+      await AgeCategoryRepository.saveCategory(req.body)
       res.redirect('/ageCategory/all')
     }
   )
@@ -104,33 +88,23 @@ const postAgeCategoryUpdate = [
       next: NextFunction
     ) => {
       const err = validationResult(req)
-      const oldAgeCategoryOrNull = await AgeCategory.findById(
-        req.params.id
-      ).exec()
+      const oldAgeCategoryOrNull = await AgeCategoryRepository.getAgeCategory(
+        req.params.id,
+        next
+      )
 
-      if (oldAgeCategoryOrNull === null) {
-        next(
-          new ApplicationError(
-            "The age category you're attempting to update does not exist",
-            ErrorCode.NOT_FOUND
-          )
-        )
-        return
-      }
-
-      if (!err.isEmpty()) {
+      if (!err.isEmpty() && oldAgeCategoryOrNull !== null) {
         res.render('age_category_form', {
           title: 'Update age category',
-          ageCategory: oldAgeCategoryOrNull,
+          ageCategory: req.body,
           errors: err.array()
         })
       }
-
-      await AgeCategory.findByIdAndUpdate(req.params.id, {
-        ...req.body,
-        _id: req.params.id
-      }).exec()
-
+      await AgeCategoryRepository.updateAgeCategory(
+        req.params.id,
+        req.body,
+        next
+      )
       res.redirect(`/ageCategory/${req.params.id}`)
     }
   )
@@ -142,22 +116,12 @@ const postAgeCategoryDelete = expressAsyncHandler(
     res: ViewResponse<IAgeCategoryListView>,
     next: NextFunction
   ) => {
-    const ageCategoryToDeleteOrNull = await AgeCategory.findById(
-      req.params.id
-    ).exec()
-
-    if (ageCategoryToDeleteOrNull === null) {
-      next(
-        new ApplicationError(
-          "The age category you're attempting to delete does not exist",
-          ErrorCode.NOT_FOUND
-        )
-      )
-      return
+    const ageCategoryToDeleteOrNull =
+      await AgeCategoryRepository.getAgeCategory(req.params.id, next)
+    if (ageCategoryToDeleteOrNull !== null) {
+      await ageCategoryToDeleteOrNull.deleteOne()
+      res.redirect('/ageCategory/all')
     }
-
-    await ageCategoryToDeleteOrNull.deleteOne()
-    res.redirect('/ageCategory/all')
   }
 )
 
@@ -169,25 +133,17 @@ const getAgeCategoryDelete = expressAsyncHandler(
   ) => {
     const [ageCategoryToDeleteOrNull, itemsForThisAgeCategory] =
       await Promise.all([
-        AgeCategory.findById(req.params.id).exec(),
+        AgeCategoryRepository.getAgeCategory(req.params.id, next),
         Figurine.find({ age: req.params.id }).exec()
       ])
 
-    if (ageCategoryToDeleteOrNull === null) {
-      next(
-        new ApplicationError(
-          'There is no such age category',
-          ErrorCode.NOT_FOUND
-        )
-      )
-      return
+    if (ageCategoryToDeleteOrNull !== null) {
+      res.render('age_category_delete', {
+        title: 'Delete age category',
+        ageCategory: ageCategoryToDeleteOrNull,
+        items: itemsForThisAgeCategory
+      })
     }
-
-    res.render('age_category_delete', {
-      title: 'Delete age category',
-      ageCategory: ageCategoryToDeleteOrNull,
-      items: itemsForThisAgeCategory
-    })
   }
 )
 
@@ -197,19 +153,8 @@ const getAgeCategoryUpdate = expressAsyncHandler(
     res: ViewResponse<IAgeCategoryReadView>,
     next: NextFunction
   ) => {
-    const ageCategoryToUpdateOrNull = await AgeCategory.findById(
-      req.params.id
-    ).exec()
-
-    if (ageCategoryToUpdateOrNull === null) {
-      next(
-        new ApplicationError(
-          "The age category you're attempting to update does not exist",
-          ErrorCode.NOT_FOUND
-        )
-      )
-      return
-    }
+    const ageCategoryToUpdateOrNull =
+      await AgeCategoryRepository.getAgeCategory(req.params.id, next)
 
     res.render('age_category_form', {
       title: `Update age category: ${ageCategoryToUpdateOrNull?.name}`,

@@ -46,7 +46,8 @@ const getCategoryCreate = expressAsyncHandler(
   async (req: Request, res: ViewResponse<ICategoryUpdateView>) => {
     res.render('category_form', {
       title: 'Create new category',
-      category: null
+      category: null,
+      errors: []
     })
   }
 )
@@ -98,7 +99,10 @@ const postCategoryUpdate = [
       next: NextFunction
     ) => {
       const err = validationResult(req)
-      const oldCategory = CategoryRepository.getCategory(req.params.id, next)
+      const oldCategory = await CategoryRepository.getCategory(
+        req.params.id,
+        next
+      )
 
       if (!err.isEmpty() && oldCategory !== null) {
         res.render('category_form', {
@@ -140,7 +144,7 @@ const postCategoryDelete = expressAsyncHandler(
     res: Response,
     next: NextFunction
   ) => {
-    CategoryRepository.deleteCategory(req.params.id, next)
+    await CategoryRepository.deleteCategory(req.params.id, next)
     res.redirect('/category/all')
   }
 )

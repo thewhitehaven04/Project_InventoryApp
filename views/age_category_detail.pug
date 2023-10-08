@@ -7,7 +7,12 @@ block content
   div(class="card d-flex flex-row justify-content-between gap-2 p-2 mb-2")
     div 
       h2=ageCategory.name
-      span #{ageCategory.min}-#{ageCategory.max} years old age group
+      if (ageCategory.min && ageCategory.max)
+        span (#{ageCategory.min} - #{ageCategory.max} years old)
+      else if(ageCategory.min && !ageCategory.max)
+        span From #{ageCategory.min} years old and older 
+      else 
+        span Up to #{ageCategory.max} years old
 
     div(class="d-flex flex-column gap-2") 
       a(href=ageCategory.url + "/update") 

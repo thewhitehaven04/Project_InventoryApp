@@ -1,6 +1,5 @@
 import ApplicationError from '@controllers/errors/applicationError'
 import { ErrorCode } from '@controllers/errors/errorCodes'
-import ICategory from '@models/category/types'
 import { type NextFunction } from 'express'
 import { type Document } from 'mongoose'
 

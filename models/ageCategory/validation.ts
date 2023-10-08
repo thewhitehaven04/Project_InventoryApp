@@ -11,13 +11,29 @@ const AGE_CATEGORY_VALIDATOR: Schema<DefaultSchemaKeys> = {
     errorMessage: 'Name must be a non-empty string'
   },
   min: {
-    isNumeric: true,
-    optional: true,
+    optional: {
+      options: {
+        values: 'falsy'
+      }
+    },
+    isInt: {
+      options: {
+        min: 0
+      }
+    },
     errorMessage: 'Minimal age must be a positive number'
   },
   max: {
-    isNumeric: true,
-    optional: true,
+    optional: {
+      options: {
+        values: 'falsy'
+      }
+    },
+    isInt: {
+      options: {
+        min: 0
+      }
+    },
     errorMessage: 'Maximum age must be a positive number'
   }
 }

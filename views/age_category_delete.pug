@@ -4,7 +4,7 @@ block content
   
   h1=title
 
-  if ageCategory 
+  if ageCategory.length
     span There are items for this age category. Please delete them before. 
     ul(class="list-group mb-4")
       each item in items 
@@ -13,7 +13,7 @@ block content
           if (ageCategory.min && ageCategory.max)
             a(href=item.url) #{item.name} (#{ageCategory.min} - #{ageCategory.max} years old)
           else if(ageCategory.min && !ageCategory.max)
-            a(href=item.url) #{item.name} From #{ageCategory.min} years old 
+            a(href=item.url) #{item.name} From #{ageCategory.min} years old and older 
           else 
             a(href="item-url") #{item.name} Up to #{ageCategory.max} years old
 
