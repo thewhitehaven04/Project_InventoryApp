@@ -1,6 +1,3 @@
-import AgeCategory from '@models/ageCategory'
-import Category from '@models/category'
-import Figurine from '@models/figurine'
 import { type Response, type NextFunction, type Request } from 'express'
 import expressAsyncHandler from 'express-async-handler'
 import { checkSchema, validationResult } from 'express-validator'
@@ -12,19 +9,14 @@ import {
   type IFigurineUpdateRequestModel,
   type IFigurineUpdateView
 } from './types'
-import type IAgeCategory from '@models/ageCategory/types'
-import type ICategory from '@models/category/types'
 import FIGURINE_UPDATE_VALIDATOR from '@models/figurine/validation'
-import ApplicationError from '@controllers/errors/applicationError'
-import { ErrorCode } from '@controllers/errors/errorCodes'
+import * as FigurineRepository from '@repository/item'
+import { getAllAgeCategories } from '@repository/ageCategory'
+import { getAllCategories } from '@repository/category'
 
 const getAllItems = expressAsyncHandler(
   async (req: Request, res: ViewResponse<IFigurineListView>) => {
-    const figurines = await Figurine.find({})
-      .populate<{ age: { name: string } }>('age')
-      .populate<{ category: { name: string } }>('category')
-      .exec()
-
+    const figurines = await FigurineRepository.getAllPopulatedFigurines()
     res.render('figurine_list', {
       title: 'All figurines',
       items: figurines.map((fig) => {
@@ -47,30 +39,20 @@ const getItemDetails = expressAsyncHandler(
     res: ViewResponse<IFigurineReadView>,
     next: NextFunction
   ) => {
-    const { id } = req.params
-    const figurineOrNull = await Figurine.findById(id)
-      .populate<{ age: IAgeCategory }>('age')
-      .populate<{ category: ICategory }>('category')
-      .exec()
-
-    if (figurineOrNull === null) {
-      next(
-        new ApplicationError(
-          `There is no figurine with id string ${id}`,
-          ErrorCode.NOT_FOUND
-        )
-      )
-      return
+    const figurineOrNull = await FigurineRepository.getPopulatedFigurine(
+      req.params.id,
+      next
+    )
+    if (figurineOrNull !== null) {
+      res.render('figurine_detail', {
+        title: figurineOrNull.name,
+        item: {
+          ...figurineOrNull.toObject(),
+          category: figurineOrNull.category.name,
+          age: figurineOrNull.age.name
+        }
+      })
     }
-
-    res.render('figurine_detail', {
-      title: figurineOrNull.name,
-      item: {
-        ...figurineOrNull.toObject(),
-        category: figurineOrNull.category.name,
-        age: figurineOrNull.age.name
-      }
-    })
   }
 )
 
@@ -80,45 +62,36 @@ const getItemFormUpdate = expressAsyncHandler(
     res: ViewResponse<IFigurineUpdateView>,
     next: NextFunction
   ) => {
-    const { id } = req.params
-    const figurineOrNull = await Figurine.findById(id)
-      .populate<{ age: IAgeCategory }>('age')
-      .populate<{ category: ICategory }>('category')
-      .exec()
-
-    if (figurineOrNull === null) {
-      next(
-        new ApplicationError(
-          `There is no figurine with id ${id}`,
-          ErrorCode.NOT_FOUND
-        )
-      )
-      return
-    }
+    const figurineOrNull = await FigurineRepository.getPopulatedFigurine(
+      req.params.id,
+      next
+    )
 
     const [ageOptions, categoryOptions] = await Promise.all([
-      AgeCategory.find().exec(),
-      Category.find().exec()
+      getAllAgeCategories(),
+      getAllCategories()
     ])
 
-    res.render('figurine_form', {
-      title: `Update figurine: ${figurineOrNull.name}`,
-      item: {
-        ...figurineOrNull.toObject(),
-        category: figurineOrNull.category.name,
-        age: figurineOrNull.age.name
-      },
-      ageOptions,
-      categoryOptions
-    })
+    if (figurineOrNull !== null) {
+      res.render('figurine_form', {
+        title: `Update figurine: ${figurineOrNull.name}`,
+        item: {
+          ...figurineOrNull.toObject(),
+          category: figurineOrNull.category.name,
+          age: figurineOrNull.age.name
+        },
+        ageOptions,
+        categoryOptions
+      })
+    }
   }
 )
 
 const getItemFormCreate = expressAsyncHandler(
   async (req, res: ViewResponse<IFigurineUpdateView>) => {
     const [ageOptions, categoryOptions] = await Promise.all([
-      AgeCategory.find().exec(),
-      Category.find().exec()
+      getAllAgeCategories(),
+      getAllCategories()
     ])
     res.render('figurine_form', {
       title: 'Create a new figurine item',
@@ -135,21 +108,14 @@ const postItemDelete = expressAsyncHandler(
     res: Response,
     next: NextFunction
   ) => {
-    const figurineItemToDeleteOrNull = await Figurine.findById(
-      req.params.id
-    ).exec()
-
-    if (figurineItemToDeleteOrNull === null) {
-      const err: any = new Error(
-        `There is no item with given id: ${req.params.id}`
-      )
-      err.status = 404
-      next(err)
-      return
+    const figurineItemToDeleteOrNull = await FigurineRepository.getFigurine(
+      req.params.id,
+      next
+    )
+    if (figurineItemToDeleteOrNull !== null) {
+      await figurineItemToDeleteOrNull.deleteOne()
+      res.redirect('/item/all')
     }
-
-    await figurineItemToDeleteOrNull.deleteOne()
-    res.redirect('/item/all')
   }
 )
 
@@ -165,8 +131,8 @@ const postItemCreate = [
 
       if (!err.isEmpty()) {
         const [ageOptions, categoryOptions] = await Promise.all([
-          AgeCategory.find().exec(),
-          Category.find().exec()
+          getAllAgeCategories(),
+          getAllCategories()
         ])
         res.render('figurine_form', {
           title: 'Create a new figurine item',
@@ -178,9 +144,7 @@ const postItemCreate = [
         return
       }
 
-      const figurine = new Figurine(req.body)
-      await figurine.save()
-
+      const figurine = await FigurineRepository.saveFigurine(req.body)
       res.redirect(`/item/${figurine.id}`)
     }
   )
@@ -199,8 +163,8 @@ const postItemUpdate = [
 
       if (!err.isEmpty()) {
         const [ageOptions, categoryOptions] = await Promise.all([
-          AgeCategory.find().exec(),
-          Category.find().exec()
+          getAllAgeCategories(),
+          getAllCategories()
         ])
         res.render('figurine_form', {
           title: 'Create a new figurine item',
@@ -212,26 +176,7 @@ const postItemUpdate = [
         return
       }
 
-      const figurineToUpdateOrNull = await Figurine.findById(
-        req.params.id
-      ).exec()
-
-      if (figurineToUpdateOrNull === null) {
-        next(
-          new ApplicationError(
-            `There is no figurine with given id: ${req.params.id}`,
-            ErrorCode.NOT_FOUND
-          )
-        )
-        return
-      }
-
-      await figurineToUpdateOrNull
-        .updateOne({
-          ...req.body,
-          imageUrl: req.body.imageUrl ?? figurineToUpdateOrNull.imageUrl
-        })
-        .exec()
+      await FigurineRepository.updateFigurine(req.params.id, req.body, next)
       res.redirect(`/item/${req.params.id}`)
     }
   )

@@ -17,13 +17,13 @@ export async function getCategory (
   return category
 }
 
-export async function getCategoryNames (): Promise<
+export async function getAllCategories (): Promise<
 Array<
 Document<unknown, Record<string, unknown>, { name: string }> &
 ICategory & { _id: Types.ObjectId }
 >
 > {
-  return await Category.find({}, 'name').exec()
+  return await Category.find({}).exec()
 }
 
 export async function saveCategory (

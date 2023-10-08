@@ -16,7 +16,7 @@ import * as CategoryRepository from '@repository/category'
 
 const getCategoryList = expressAsyncHandler(
   async (req: Request, res: ViewResponse<ICategoryListView>) => {
-    const categoryNames = await CategoryRepository.getCategoryNames()
+    const categoryNames = await CategoryRepository.getAllCategories()
 
     res.render('category_list', {
       title: 'All categories',

@@ -28,7 +28,7 @@ export interface IFigurineMainView {
   url: string
 }
 
-interface IFigurineFullView extends Omit<IFigurine, 'age' | 'category'> {
+export interface IFigurineFullView extends Omit<IFigurine, 'age' | 'category'> {
   age: string
   category: string
 }

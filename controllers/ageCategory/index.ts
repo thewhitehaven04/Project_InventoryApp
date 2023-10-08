@@ -16,7 +16,7 @@ import * as AgeCategoryRepository from '@repository/ageCategory'
 
 const getAgeCategoryList = expressAsyncHandler(
   async (req: Request, res: ViewResponse<IAgeCategoryListView>) => {
-    const ageCategoryList = await AgeCategoryRepository.getAllCategories()
+    const ageCategoryList = await AgeCategoryRepository.getAllAgeCategories()
 
     res.render('age_category_list', {
       title: 'Age categories',
@@ -73,7 +73,7 @@ const postAgeCategoryCreate = [
         return
       }
 
-      await AgeCategoryRepository.saveCategory(req.body)
+      await AgeCategoryRepository.saveAgeCategory(req.body)
       res.redirect('/ageCategory/all')
     }
   )
@@ -100,11 +100,7 @@ const postAgeCategoryUpdate = [
           errors: err.array()
         })
       }
-      await AgeCategoryRepository.updateAgeCategory(
-        req.params.id,
-        req.body,
-        next
-      )
+      await AgeCategoryRepository.updateAgeCategory(req.params.id, req.body)
       res.redirect(`/ageCategory/${req.params.id}`)
     }
   )

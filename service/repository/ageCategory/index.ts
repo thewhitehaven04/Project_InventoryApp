@@ -17,7 +17,7 @@ export async function getAgeCategory (
   return ageCategory
 }
 
-export async function getAllCategories (): Promise<
+export async function getAllAgeCategories (): Promise<
 Array<
 Document<unknown, Record<string, unknown>, { name: string }> &
 IAgeCategory & { _id: Types.ObjectId }
@@ -26,7 +26,7 @@ IAgeCategory & { _id: Types.ObjectId }
   return await AgeCategory.find({}).exec()
 }
 
-export async function saveCategory (
+export async function saveAgeCategory (
   category: IAgeCategory
 ): Promise<Document<unknown, Record<string, unknown>, IAgeCategory>> {
   const newAgeCategory = new AgeCategory(category)
@@ -36,8 +36,7 @@ export async function saveCategory (
 
 export async function updateAgeCategory (
   id: string,
-  category: IAgeCategory,
-  next: NextFunction
+  category: IAgeCategory
 ): Promise<void> {
   await AgeCategory.findByIdAndUpdate(id, category)
 }
