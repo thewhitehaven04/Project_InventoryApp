@@ -40,7 +40,7 @@ app.use(
     }
   })
 )
-app.use(express.static('public'))
+app.use(express.static('resources'))
 
 // setting up controllers
 app.use('/', indexRouter)

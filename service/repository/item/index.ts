@@ -66,7 +66,7 @@ export async function updateFigurine (
     await oldFigurine
       .updateOne({
         ...figurine,
-        imageUrl: oldFigurine.imageUrl ?? figurine.imageUrl
+        imageUrl: figurine.imageUrl ?? oldFigurine.imageUrl
       })
       .exec()
   }

@@ -4,12 +4,12 @@ import multer from 'multer'
 import { join } from 'path'
 
 const figurineImageStorage = multer.diskStorage({
-  destination: join(__dirname, './../../resources/images'),
+  destination: join(__dirname, './../../../resources/images'),
   filename: (req: Request<any, any, UploadImageRequestBody, any>, file, cb) => {
     const filenameSplit = file.originalname.split('.')
     const filename =
       filenameSplit[0] + '_' + Date.now() + '.' + filenameSplit[1]
-    req.body.imageUrl = '/resources/images/' + filename
+    req.body.imageUrl = '/images/' + filename
     cb(null, filename)
   }
 })
