@@ -9,8 +9,8 @@ const FIGURINE_UPDATE_VALIDATOR: Schema<DefaultSchemaKeys> = {
     isString: true,
     isLength: {
       options: {
-        min: 3,
-        max: 32
+        min: 2,
+        max: 64
       },
       errorMessage: 'Name must be a string between 3 and 32 characters long'
     }
@@ -21,13 +21,17 @@ const FIGURINE_UPDATE_VALIDATOR: Schema<DefaultSchemaKeys> = {
     isLength: {
       options: {
         min: 3,
-        max: 512
+        max: 2048
       },
       errorMessage: 'Name must be a string between 3 and 512 characters long'
     }
   },
   'dimensions.height': {
-    optional: true,
+    optional: {
+      options: {
+        values: 'falsy'
+      }
+    },
     isFloat: {
       options: {
         min: 0
@@ -36,7 +40,11 @@ const FIGURINE_UPDATE_VALIDATOR: Schema<DefaultSchemaKeys> = {
     errorMessage: 'Height must be a non-negative number or null'
   },
   'dimensions.width': {
-    optional: true,
+    optional: {
+      options: {
+        values: 'falsy'
+      }
+    },
     isFloat: {
       options: {
         min: 0
@@ -45,7 +53,11 @@ const FIGURINE_UPDATE_VALIDATOR: Schema<DefaultSchemaKeys> = {
     errorMessage: 'Width must either be a non-negative number or null'
   },
   'dimensions.depth': {
-    optional: true,
+    optional: {
+      options: {
+        values: 'falsy'
+      }
+    },
     isFloat: {
       options: {
         min: 0
@@ -54,7 +66,11 @@ const FIGURINE_UPDATE_VALIDATOR: Schema<DefaultSchemaKeys> = {
     errorMessage: 'Depth must either be a non-negative number or null'
   },
   weight: {
-    optional: true,
+    optional: {
+      options: {
+        values: 'falsy'
+      }
+    },
     isFloat: {
       options: {
         min: 0
