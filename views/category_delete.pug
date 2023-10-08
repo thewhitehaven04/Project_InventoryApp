@@ -4,7 +4,7 @@ block content
   
   h1=title
 
-  if category 
+  if category.length 
     span There are items in this category. Please delete them before deleting the category.
     ul(class="list-group mb-4")
       each item in items 
@@ -14,4 +14,4 @@ block content
   else
     span There are no items in this category. You can delete it safely.
     form(method='post' action='')
-      button(type='submit') Delete
+      button(type='submit' class="btn btn-outline-primary") Delete
