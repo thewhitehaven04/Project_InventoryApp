@@ -107,6 +107,11 @@ const FIGURINE_UPDATE_VALIDATOR: Schema<DefaultSchemaKeys> = {
     }
   },
   imageUrl: {
+    optional: {
+      options: {
+        values: 'falsy'
+      }
+    },
     isEmpty: false,
     isString: true
   },
